@@ -1,5 +1,4 @@
-
-
+const isAuth = require('../middlewares/isAuth.middleware')
 
 module.exports = (app) => {
     app.get('/', (req, res) => {

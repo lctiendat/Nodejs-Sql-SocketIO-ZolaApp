@@ -6,6 +6,7 @@ var { check, validationResult } = require('express-validator');
 const friendValidator = require('../validator/friend.validator');
 const appCpm = require('../components/app.component');
 const serverConfig = require('../config/server.config');
+
 module.exports = (app) => {
     app.post('/friend/search', urlencodedParser, friendValidator.searchFriend(), (req, res) => {
         const error = validationResult(req);

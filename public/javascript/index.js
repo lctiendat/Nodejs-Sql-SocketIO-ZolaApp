@@ -70,8 +70,12 @@ $(document).ready(() => {
             success(res) {
                 console.log(res)
                 if (res.status) {
-                    $('#modalAddFriend').modal('hide')
-                    $('#result').html(`<center style="font-size:14px" class="mt-3">${res.msg}</center>`)
+                    Swal.fire({
+                        text: `${res.msg}`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    $('button[data-dismiss="modal"]').click()
                 }
                 else {
                     $('#result').html(`<center style="font-size:14px" class="mt-3">${res.msg}</center>`)
@@ -141,9 +145,7 @@ $(document).ready(() => {
             success(res) {
                 if (res.status) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: 'Cập nhật thành công',
+                        text: 'Cập nhật thông tin thành công',
                         showConfirmButton: false,
                         timer: 3000
                     })
