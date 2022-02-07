@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Zola Chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #eee;
+        }
+
+        .card {
+            margin-top: 10px;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .card center p {
+            font-weight: bold;
+        }
+
+        .card center span {
+            font-size: 14px;
+        }
+
+        input.form-control {
+            height: 40px !important;
+            border: 0;
+            border-radius: 0;
+            border-bottom: 1px solid #ccc;
+            outline: 0 !important;
+            margin-top: 10px !important;
+        }
+
+        input::placeholder {
+            font-size: 13px !important;
+            color: #ccc !important;
+        }
+
+        .btn {
+            height: 40px;
+            border-radius: 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        a {
+            font-size: 14px;
+        }
+
+        .result {
+            height: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 50px;
+        }
+
+        .text-danger {
+            font-size: 13px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 mx-auto mt-3">
+                <center>
+                    <img src="https://img.upanh.tv/2022/01/28/Du-an-moi-1.png" alt="" height="70px"> <br>
+                    <span style="font-size: 14px;">Đăng nhập tài khoản Zola <br>
+                        để kết nối với ứng dụng Zola Chat</span>
+                </center>
+                <div class="card p-5">
+                    <div class="result"></div>
+                    <div class="form-group">
+                        <input type="text" id="email" class="form-control shadow-none" placeholder="Tài khoản email">
+                        <span class="text-danger" id="errEmail"></span>
+                    </div>
+                    <div class="form-group position-relative">
+                        <input type="password" id="password" class="form-control shadow-none" placeholder="Mật khẩu">
+                        <span class="text-danger" id="errPassword"></span>
+                        <span id="iconpassword" class="fa fa-eye float-right position-absolute"
+                            style="top: 23px; right:10px"></span>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary w-100 shadow-none btn-siginin">Đăng nhập ngay</button>
+                    </div>
+                    <center style="font-size: 14px;">hoặc</center>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <a href="/login/google"><button class="btn btn text center bg-danger w-100"><i
+                                        class="fab fa-google text-white"></i></button></a>
+                        </div>
+                        <div class="col-md-6 mt-xs-2">
+                            <a href="/login/facebook"> <button class="btn btn text center w-100 bg-primary"><i
+                                        class="fab fa-facebook text-white"></i></button> </a>
+                        </div>
+                    </div>
+                    <a class="mt-3 text-dark" href="/signup">Tạo tài khoản</a>
+                    <!-- <center><a href="/signin" class="text-decoration-none text-dark">Đăng nhập ngay</a></center> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getMsgErr(data) {
+            arrError = {}
+            for (let index = 0; index < data.length; index++) {
+                if (data[index].param == 'email') {
+                    const errEmail = data[index].msg
+                    arrError['errEmail'] = errEmail
+                }
+                if (data[index].param == 'password') {
+                    arrError['errPassword'] = data[index].msg
+                }
+            }
+            return arrError
+        }
+
+        $('.btn-siginin').click((e) => {
+            const email = $('#email').val().trim()
+            const password = $('#password').val().trim()
+            $.ajax({
+                url: '/signin',
+                type: 'POST',
+                data: {
+                    email,
+                    password
+                },
+                dataType: 'JSON',
+                success(res) {
+                    console.log(res)
+                    if (res.status) {
+                        $('.btn-siginin').attr('disabled', 'disabled').html('Đang xử lý <span class="spinner-grow spinner-grow-sm""> </span>')
+                        setTimeout(() => {
+                            $('.result').html(res.msg).addClass('text-success').removeClass('text-danger')
+                            $('.btn-siginin').attr('disabled', 'disabled').html('Chuyển hướng <span class="spinner-grow spinner-grow-sm""> </span>')
+                        }, 2000);
+                    }
+                    else if (res.status == false) {
+                        $('.btn-siginin').attr('disabled', 'disabled').html('Đang xử lý <span class="spinner-grow spinner-grow-sm""> </span>')
+                        setTimeout(() => {
+                            $('.result').html(res.msg).addClass('text-danger').removeClass('text-success')
+                            $('.btn-siginin').removeAttr('disabled').html('Đăng nhập')
+                        }, 2000);
+                    }
+                    else {
+                        $('.btn-siginin').attr('disabled', 'disabled').html('Đang xử lý <span class="spinner-grow spinner-grow-sm""> </span>')
+                        setTimeout(() => {
+                            $('#errEmail').html(getMsgErr(res).errEmail == null ? '' : getMsgErr(res).errEmail)
+                            $('#errPassword').html(getMsgErr(res).errPassword == null ? '' : getMsgErr(res).errPassword)
+                            $('.btn-siginin').removeAttr('disabled').html('Đăng nhập')
+                        }, 2000);
+                    }
+                },
+                error(err) {
+                    console.log(err)
+                }
+            })
+        })
+
+        $('#iconpassword').click((e) => {
+            if ($('#password').attr('type') == 'password') {
+                $('#password').attr('type', 'text')
+                $('#iconpassword').attr('class', 'fa fa-eye-slash float-right position-absolute')
+            } else {
+                $('#password').attr('type', 'password')
+                $('#iconpassword').attr('class', 'fa fa-eye float-right position-absolute')
+            }
+        })
+    </script>
+</body>
+
+</html>
