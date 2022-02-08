@@ -21,17 +21,18 @@ $(document).ready(() => {
                     style="height: 150px; width: 150px;"><br>
                 <span class="mt-2">${res.data[0].name == null ? 'Chưa cập nhật' : res.data[0].name}</span> <br>
                 <span id="signature">${res.data[0].email}</span> <br>
-                <button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">${(() => {
+                ${(() => {
                             if (typeof res.data[0].status !== 'undefined') {
                                 if (res.data[0].status == 'pending') {
-                                    return res.data[0].order == 'after' ? '<i class="fa fa-user-plus"> </i> Đã gửi lời mời' : 'Xác nhận lời mời <i class="fa fa-check"> </i>'
+                                    return res.data[0].order == 'after' ? `<button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Huỷ lời mời </button>`
+                                        : `<button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Đồng ý</button> <button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Bỏ qua</button>`
                                 }
                                 return ` <i class="fa fa-user-check"> </i> Bạn bè`
                             }
                             else {
-                                return 'Kết bạn'
+                                return `<button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Kết bạn </button>`
                             }
-                        })()}</button>
+                        })()}
             </center>
             <table class="table mt-5 infor">
                 <tbody>
@@ -44,7 +45,7 @@ $(document).ready(() => {
                         <td class="text-dark">${res.data[0].birthday == null ? 'Chưa cập nhật' : new Date(res.data[0].birthday).toISOString().slice(0, 10)}</td>
                     </tr>
                 </tbody>
-            </table>`)
+            </table>` )
                     $('#emailFriend').hide()
                     $('.btn-search-friend').hide()
                     if (typeof res.data[0].status !== 'undefined') {
