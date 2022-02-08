@@ -1,4 +1,6 @@
 $(document).ready(() => {
+
+
     $('.btn-search-friend').click((e) => {
         e.preventDefault()
         const email = $('#emailFriend').val().trim()
@@ -13,14 +15,24 @@ $(document).ready(() => {
             success(res) {
                 console.log(res)
                 if (res.status) {
+
                     $('#result').html(`
             <center> <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
                     style="height: 150px; width: 150px;"><br>
                 <span class="mt-2">${res.data[0].name == null ? 'Chưa cập nhật' : res.data[0].name}</span> <br>
                 <span id="signature">${res.data[0].email}</span> <br>
-                <button class="btn btn-primary btn-add-friend mt-3" data-email="${res.data[0].email}">Kết bạn</button>
+                <button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">${(() => {
+                            if (typeof res.data[0].status !== 'undefined') {
+                                if (res.data[0].status == 'pending') {
+                                    return res.data[0].order == 'after' ? '<i class="fa fa-user-plus"> </i> Đã gửi lời mời' : 'Xác nhận lời mời <i class="fa fa-check"> </i>'
+                                }
+                                return ` <i class="fa fa-user-check"> </i> Bạn bè`
+                            }
+                            else {
+                                return 'Kết bạn'
+                            }
+                        })()}</button>
             </center>
-
             <table class="table mt-5 infor">
                 <tbody>
                     <tr>
@@ -29,12 +41,24 @@ $(document).ready(() => {
                     </tr>
                     <tr>
                         <td>Ngày sinh :</td>
-                        <td class="text-dark">${res.data[0].birthday == null ? 'Chưa cập nhật' : res.data[0].birthday}</td>
+                        <td class="text-dark">${res.data[0].birthday == null ? 'Chưa cập nhật' : new Date(res.data[0].birthday).toISOString().slice(0, 10)}</td>
                     </tr>
                 </tbody>
             </table>`)
                     $('#emailFriend').hide()
                     $('.btn-search-friend').hide()
+                    if (typeof res.data[0].status !== 'undefined') {
+                        if (res.data[0].status !== 'pending') {
+                            $('.btn-add-friend').attr('disabled', true)
+                                .addClass(`btn-light border border-dark`)
+                                .removeClass('btn-primary').css('color', 'black')
+                        }
+                        $('.btn-add-friend')
+                            .addClass(`btn-light border border-dark ${res.data[0].order == 'after' ? 'cancel-add-friend' : 'accept-friend'}`)
+                            .removeClass('btn-primary btn-add-friend')
+                            .css('color', 'black')
+                    }
+
                 }
                 else if (res.status == false) {
                     $('#result').html(`<center style="font-size:14px" class="mt-3">${res.msg}</center>`)

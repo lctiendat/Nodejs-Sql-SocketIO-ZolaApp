@@ -17,7 +17,9 @@ function getData(data, type) {
     return arr.toString();
 }
 
-
+/**
+ * Lưu dữ liệu vào database
+ */
 function save(model, data) {
     return new Promise((res, rej) => {
         connection.query(`INSERT INTO ${model}(${getData(data, 'key')}) VALUE(${getData(data, 'value').split(',').map((value) => { return `'${value}'`; }).join(',')})`, (err, result) => {

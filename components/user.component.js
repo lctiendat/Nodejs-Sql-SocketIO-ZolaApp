@@ -3,6 +3,9 @@ const mysql = require('mysql');
 const connection = mysql.createConnection(config.dbConfig());
 connection.connect();
 
+/**
+ * Kiểm tra email có tồn tại trong database hay không
+ */
 function checkEmail(email) {
     return new Promise((res, rej) => {
         connection.query(`SELECT COUNT(*) AS count FROM users where email = '${email}' AND delete_flag = 0`, (err, row) => {
@@ -12,6 +15,9 @@ function checkEmail(email) {
     });
 }
 
+/**
+ * Kiểm tra thông tin đăng nhập
+ */
 function checkUser(email, password) {
     return new Promise((res, rej) => {
         connection.query(`SELECT COUNT(*) AS count FROM users where email = '${email}' AND password = '${password}' AND delete_flag = 0`, (err, row) => {
@@ -21,6 +27,9 @@ function checkUser(email, password) {
     });
 }
 
+/**
+ * Tìm kiếm người dùng
+ */
 function getUser(key) {
     return new Promise((res, rej) => {
         connection.query(`SELECT * FROM users WHERE email LIKE '%${key}%' AND delete_flag=0 LIMIT 1`, (err, rows) => {
@@ -30,6 +39,9 @@ function getUser(key) {
     })
 }
 
+/**
+ * Lấy người dùng theo email
+ */
 function getUserByEmail(email) {
     return new Promise((res, rej) => {
         connection.query(`SELECT * FROM users WHERE email = '${email}' AND delete_flag=0 LIMIT 1`, (err, rows) => {
@@ -39,6 +51,9 @@ function getUserByEmail(email) {
     })
 }
 
+/**
+ * CẬp nhật thông tin người dùng
+ */
 function updateUser(email, data) {
     return new Promise((res, rej) => {
         connection.query(`UPDATE users SET ? WHERE email = '${email}'`, data, (err, result) => {
