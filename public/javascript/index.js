@@ -68,7 +68,7 @@ $(document).ready(() => {
                 }
             },
             error(err) {
-                $('#result').html(res.msg)
+                $('#result').html(err)
             }
         })
     })

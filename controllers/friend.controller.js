@@ -113,4 +113,46 @@ module.exports = (app) => {
         })
 
     })
+
+    /**
+     * Chấp nhận lời mời kết bạn
+     */
+    app.post('/friend/accept', urlencodedParser, (req, res) => {
+        const userEmail = req.session.sessionEmail
+        const friendEmail = req.body.email
+        friendCPM.acceptFriend(userEmail, friendEmail).then(result => {
+
+            return res.json({
+                status: true,
+                msg: 'Đã chấp nhận lời mời kết bạn'
+            })
+        }).catch(err => {
+            console.log(err)
+            return res.json({
+                status: false,
+                msg: 'Có lỗi xảy ra'
+            })
+        })
+    })
+
+    /**
+     * Từ chối lời mời kết bạn
+     */
+    app.post('/friend/cancel', urlencodedParser, (req, res) => {
+        const userEmail = req.session.sessionEmail
+        const friendEmail = req.body.email
+        friendCPM.cancelFriendRequest(userEmail, friendEmail).then(result => {
+            return res.json({
+                status: true,
+                msg: 'Xoá yêu cầu kết bạn thành công'
+            })
+        }).catch(err => {
+            console.log(err)
+            return res.json({
+                status: false,
+                msg: 'Có lỗi xảy ra'
+            })
+        })
+    })
+
 }

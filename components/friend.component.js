@@ -23,8 +23,8 @@ function checkFriend(userEmail, friendEmail) {
 function getFriend(userEmail) {
     return new Promise((res, rej) => {
         connection.query(`SELECT * FROM users WHERE email IN
-         (SELECT friendEmail as email FROM friends WHERE userEmail = '${userEmail}' AND status = 'accept' 
-         union SELECT userEmail as email FROM friends WHERE friendEmail = '${userEmail}' AND status = 'accept')`, (err, rows) => {
+         (SELECT friendEmail as email FROM friends WHERE userEmail = '${userEmail}' AND status = 'accept' AND delete_flag = 0
+         union SELECT userEmail as email FROM friends WHERE friendEmail = '${userEmail}' AND status = 'accept' AND delete_flag = 0 ) ORDER BY id DESC`, (err, rows) => {
             if (err) return rej(err)
             res(rows)
         })
@@ -37,16 +37,51 @@ function getFriend(userEmail) {
 function getFriendRequest(userEmail) {
     return new Promise((res, rej) => {
         connection.query(`SELECT * FROM users WHERE email IN
-         (SELECT friendEmail as email FROM friends WHERE userEmail = '${userEmail}' AND status = 'pending' 
-         union SELECT userEmail as email FROM friends WHERE friendEmail = '${userEmail}' AND status = 'pending')`, (err, rows) => {
+         (SELECT friendEmail as email FROM friends WHERE userEmail = '${userEmail}' AND status = 'pending' AND delete_flag = 0
+         union SELECT userEmail as email FROM friends WHERE friendEmail = '${userEmail}' AND status = 'pending' AND delete_flag = 0) ORDER BY id DESC`, (err, rows) => {
             if (err) return rej(err)
             res(rows)
         })
     })
 }
 
+/**
+ * Đồng ý kết bạn
+ */
+function acceptFriend(userEmail, friendEmail) {
+    return new Promise((res, rej) => {
+        connection.query(`UPDATE friends SET status = 'accept' 
+        WHERE userEmail = '${userEmail}' 
+        AND friendEmail = '${friendEmail}'
+         OR friendEmail = '${userEmail}' 
+         AND userEmail = '${friendEmail}'`, (err, result) => {
+            if (err) return rej(err)
+            res(result)
+        })
+    })
+}
+
+/**
+ * Từ chối kết bạn
+ */
+function cancelFriendRequest(userEmail, friendEmail) {
+    return new Promise((res, rej) => {
+        connection.query(`UPDATE friends SET delete_flag = 1 
+        WHERE userEmail = '${userEmail}' 
+        AND friendEmail = '${friendEmail}'
+         OR friendEmail = '${userEmail}' 
+         AND userEmail = '${friendEmail}'`, (err, result) => {
+            if (err) return rej(err)
+            res(result)
+        })
+    })
+}
+
+
 module.exports = {
     checkFriend,
     getFriend,
-    getFriendRequest
+    getFriendRequest,
+    acceptFriend,
+    cancelFriendRequest
 }

@@ -52,7 +52,7 @@ function getUserByEmail(email) {
 }
 
 /**
- * CẬp nhật thông tin người dùng
+ * Câp nhật thông tin người dùng
  */
 function updateUser(email, data) {
     return new Promise((res, rej) => {
@@ -63,10 +63,12 @@ function updateUser(email, data) {
     })
 }
 
+
+
 module.exports = {
     checkEmail,
     checkUser,
     getUser,
     getUserByEmail,
-    updateUser
+    updateUser,
 };
