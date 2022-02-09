@@ -1,7 +1,8 @@
-
+const appCpm = require('../components/app.component');
 const userCPM = require('../components/user.component')
 var { check, validationResult } = require('express-validator');
 const friendCPM = require('../components/friend.component')
+const serverConfig = require('../config/server.config');
 
 /**
  * Tìm kiếm bạn bè
@@ -53,23 +54,21 @@ function searchFriend(req, res) {
  */
 function addFriend(req, res) {
     const userEmail = req.session.User.email
-    friendCPM.getFriend(userEmail).then(listFriend => {
-        friendCPM.getFriendRequest(userEmail).then(listFriendRequest => {
-            return res.render('friend/list',
-                {
-                    listFriend,
-                    listFriendRequest
-                })
-        }).catch(err => {
-            console.log(err)
-            res.json({
-                status: false,
-                msg: 'Có lỗi xảy ra'
-            })
+    const friendEmail = req.body.email
+    const data = [{
+        userEmail: userEmail,
+        friendEmail: friendEmail,
+        created: serverConfig.getCurrenTime(),
+        modified: serverConfig.getCurrenTime()
+    }]
+    appCpm.save('friends', data).then(result => {
+        return res.json({
+            status: true,
+            msg: 'Đã gửi lời mời kết bạn'
         })
     }).catch(err => {
         console.log(err)
-        res.json({
+        return res.json({
             status: false,
             msg: 'Có lỗi xảy ra'
         })

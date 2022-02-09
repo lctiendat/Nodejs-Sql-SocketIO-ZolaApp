@@ -10,6 +10,13 @@ const userRouter = require('./routes/user.route');
 const friendRouter = require('./routes/friend.route');
 const homeRouter = require('./routes/home.route');
 var app = express();
+const server = require('http').createServer(app);
+const { Server } = require('socket.io')
+const io = new Server(server);
+
+io.on('connection', (socket) =>{
+    console.log('co nguoi ket noi');
+})
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
