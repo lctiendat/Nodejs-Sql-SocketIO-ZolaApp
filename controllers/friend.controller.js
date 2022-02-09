@@ -7,6 +7,9 @@ const friendValidator = require('../validator/friend.validator');
 const appCpm = require('../components/app.component');
 const friendCPM = require('../components/friend.component')
 const serverConfig = require('../config/server.config');
+var LocalStorage = require('node-localstorage').LocalStorage;
+localStorage = new LocalStorage('./scratch');
+const isAuth = require('../middlewares/isAuth.middleware')
 
 module.exports = (app) => {
 
@@ -26,7 +29,7 @@ module.exports = (app) => {
                     msg: 'Người dùng không tồn tại trong hệ thống'
                 })
             }
-            const userEmail = req.session.sessionEmail
+            const userEmail = req.session.User.email
             friendCPM.checkFriend(userEmail, key).then(data => {
                 if (data.length == 0) {
                     return res.json({
@@ -61,7 +64,7 @@ module.exports = (app) => {
      * Thêm bạn bè
      */
     app.post('/friend/add', urlencodedParser, (req, res) => {
-        const userId = req.session.sessionEmail
+        const userId = req.session.User.email
         const friendId = req.body.email
         const data = [{
             userEmail: userId,
@@ -87,9 +90,9 @@ module.exports = (app) => {
     /**
      * Danh sách bạn bè
      */
-    app.get('/friend/list', (req, res) => {
+    app.get('/friend/list',isAuth.isAuthorize,(req, res) => {
 
-        const userEmail = req.session.sessionEmail
+        const userEmail = req.session.User.email
         friendCPM.getFriend(userEmail).then(listFriend => {
             friendCPM.getFriendRequest(userEmail).then(listFriendRequest => {
                 return res.render('friend/list',
@@ -118,7 +121,7 @@ module.exports = (app) => {
      * Chấp nhận lời mời kết bạn
      */
     app.post('/friend/accept', urlencodedParser, (req, res) => {
-        const userEmail = req.session.sessionEmail
+        const userEmail = req.session.User.email
         const friendEmail = req.body.email
         friendCPM.acceptFriend(userEmail, friendEmail).then(result => {
 
@@ -134,12 +137,12 @@ module.exports = (app) => {
             })
         })
     })
-
+  
     /**
      * Từ chối lời mời kết bạn
      */
     app.post('/friend/cancel', urlencodedParser, (req, res) => {
-        const userEmail = req.session.sessionEmail
+        const userEmail = req.session.User.email
         const friendEmail = req.body.email
         friendCPM.cancelFriendRequest(userEmail, friendEmail).then(result => {
             return res.json({

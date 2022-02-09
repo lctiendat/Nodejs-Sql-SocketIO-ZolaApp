@@ -144,6 +144,9 @@
                         setTimeout(() => {
                             $('.result').html(res.msg).addClass('text-success').removeClass('text-danger')
                             $('.btn-siginin').attr('disabled', 'disabled').html('Chuyển hướng <span class="spinner-grow spinner-grow-sm""> </span>')
+                            setTimeout(() => {
+                                window.location.href = '/'
+                            }, 2000);
                         }, 2000);
                     }
                     else if (res.status == false) {

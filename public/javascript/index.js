@@ -1,6 +1,5 @@
 $(document).ready(() => {
 
-
     $('.btn-search-friend').click((e) => {
         e.preventDefault()
         const email = $('#emailFriend').val().trim()
@@ -15,7 +14,6 @@ $(document).ready(() => {
             success(res) {
                 console.log(res)
                 if (res.status) {
-
                     $('#result').html(`
             <center> <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
                     style="height: 150px; width: 150px;"><br>
@@ -24,8 +22,9 @@ $(document).ready(() => {
                 ${(() => {
                             if (typeof res.data[0].status !== 'undefined') {
                                 if (res.data[0].status == 'pending') {
-                                    return res.data[0].order == 'after' ? `<button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Huỷ lời mời </button>`
-                                        : `<button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Đồng ý</button> <button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Bỏ qua</button>`
+                                    return res.data[0].order == 'after' ? `<button class="btn btn-primary btn-action-friend mt-3 btn-cancel-friend mt-3 shadow-none" data-email="${res.data[0].email}">Huỷ lời mời </button>`
+                                        : `<button class="btn btn-primary btn-action-friend mt-3 btn-accept-friend shadow-none" data-email="${res.data[0].email}">Đồng ý</button> 
+                                        <button class="btn btn-primary btn-action-friend btn-cancel-friend mt-3 shadow-none" data-email="${res.data[0].email}">Bỏ qua</button>`
                                 }
                                 return ` <i class="fa fa-user-check"> </i> Bạn bè`
                             }
@@ -54,9 +53,9 @@ $(document).ready(() => {
                                 .addClass(`btn-light border border-dark`)
                                 .removeClass('btn-primary').css('color', 'black')
                         }
-                        $('.btn-add-friend')
-                            .addClass(`btn-light border border-dark ${res.data[0].order == 'after' ? 'cancel-add-friend' : 'accept-friend'}`)
-                            .removeClass('btn-primary btn-add-friend')
+                        $('.btn-cancel-friend')
+                            .addClass(`btn-light`)
+                            .removeClass('btn-primary')
                             .css('color', 'black')
                     }
 
@@ -184,4 +183,71 @@ $(document).ready(() => {
             }
         })
     })
+
+    var countFriendRequest = parseInt($('#count-friend-request').text().trim())
+
+    $(document).on('click', '.btn-accept-friend', (e) => {
+        e.preventDefault()
+        const email = $(e.target).data('email')
+        const name = $(e.target).data('name')
+        const countFriend = parseInt($('#count-friend').text().trim())
+        $.ajax({
+            url: '/friend/accept',
+            type: 'POST',
+            data: {
+                email
+            },
+            success: (res) => {
+                if (res.status) {
+                    Swal.fire({
+                        text: `${res.msg}`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    $(e.target).closest('.card').remove()
+                    $('#count-friend-request').html(countFriendRequest - 1)
+                    $('#count-friend').html(countFriend + 1)
+
+                    $('#list-friend').prepend(`
+                    <div class="row mt-2" style="height: 60px;">
+                        <div class="col-md-3" style="line-height: 60px;">
+                            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"
+                                class="w-100" style="max-width: 60px;">
+                        </div>
+                        <div class="col-md-9">
+                            <p style="line-height: 60px;font-size: 15px;">
+                                ${name}
+                            </p>
+                        </div>
+                    </div>
+                    `)
+                }
+            }
+        })
+    })
+
+    $(document).on('click', '.btn-cancel-friend', (e) => {
+        e.preventDefault()
+        const email = $(e.target).data('email')
+
+        $.ajax({
+            url: '/friend/cancel',
+            type: 'POST',
+            data: {
+                email
+            },
+            success: (res) => {
+                if (res.status) {
+                    Swal.fire({
+                        text: `${res.msg}`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    $(e.target).closest('.card').remove()
+                    $('#count-friend-request').html(countFriendRequest - 1)
+                }
+            }
+        })
+    })
+
 })

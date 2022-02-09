@@ -1,6 +1,7 @@
-module.exports = (res, req, next) => {
-    if (req.session.sessionEmail) {
+module.exports.isAuthorize = (req, res, next) => {
+    if (req.session.User) {
         return next();
     }
-    res.redirect('/login');
+    res.redirect('/signin');
 }
+

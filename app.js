@@ -9,7 +9,7 @@ const userController = require('./controllers/user.controller');
 const homeController = require('./controllers/home.controller')
 const friendController = require('./controllers/friend.controller')
 const passport = require('passport');
-//const isAuth = require('./middlewares/isAuth.middleware')
+const userRouter = require('./routes/user.route');
 var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
@@ -17,10 +17,10 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(session({
-  secret: 'session',
-  saveUninitialized: true,
   resave: true,
- // cookie: { maxAge: 6000 }
+  saveUninitialized: true,
+  secret: 'somesecret',
+  cookie: { maxAge: 60000 }
 }));
 app.use('/assets', express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,10 +28,11 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 //app.use(isAuth)
-userController(app);
+//userController(app);
 homeController(app)
 friendController(app)
 
+userRouter(app)
 app.use(function (req, res, next) {
   next(createError(404));
 });
