@@ -2,7 +2,6 @@ const userController = require('../controllers/user.controller');
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const userValidator = require('../validator/user.validator');
-var { check, validationResult } = require('express-validator');
 module.exports = (app) => {
 
     /**

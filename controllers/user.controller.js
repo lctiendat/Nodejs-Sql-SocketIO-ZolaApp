@@ -1,12 +1,9 @@
-var bodyParser = require('body-parser');
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
-const userValidator = require('../validator/user.validator');
+
 var { check, validationResult } = require('express-validator');
 const appCpm = require('../components/app.component');
 const userCpm = require('../components/user.component');
 const md5 = require('md5')
 const serverConfig = require('../config/server.config');
-const googleConfig = require('../config/google.config');
 
 /**
  * Đăng ký

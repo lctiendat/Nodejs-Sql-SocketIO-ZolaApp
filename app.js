@@ -5,11 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const bodyParser = require('body-parser');
 const session = require('express-session')
-const userController = require('./controllers/user.controller');
-const homeController = require('./controllers/home.controller')
-const friendController = require('./controllers/friend.controller')
 const passport = require('passport');
 const userRouter = require('./routes/user.route');
+const friendRouter = require('./routes/friend.route');
+const homeRouter = require('./routes/home.route');
 var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
@@ -28,11 +27,10 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 //app.use(isAuth)
-//userController(app);
-homeController(app)
-friendController(app)
 
 userRouter(app)
+friendRouter(app)
+homeRouter(app)
 app.use(function (req, res, next) {
   next(createError(404));
 });
