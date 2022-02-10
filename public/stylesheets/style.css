@@ -1,8 +1,114 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.sidebar i {
+    font-size: 30px;
+    margin-top: 50px;
+    color: white;
 }
 
-a {
-  color: #00B7FF;
+ul {
+    list-style-type: none;
+}
+
+#search {
+    height: 35px;
+    border: 0;
+    border-radius: 20px;
+    background: #eee;
+    line-height: 35px;
+}
+
+#search::placeholder {
+    font-size: 13px;
+    text-indent: 40px;
+}
+
+.modal.fade .modal-dialog.modal-dialog-zoom {
+    -webkit-transform: translate(0, 0)scale(.5);
+    transform: translate(0, 0)scale(.5);
+}
+
+.modal.show .modal-dialog.modal-dialog-zoom {
+    -webkit-transform: translate(0, 0)scale(1);
+    transform: translate(0, 0)scale(1);
+}
+
+#modalAddFriend input {
+    border: 0;
+    border-bottom: 1px solid #eee;
+}
+
+#modalAddFriend input::placeholder {
+    font-size: 14px;
+}
+
+#modalAddFriend .modal-footer button {
+    font-size: 14px;
+}
+
+#signature {
+    font-size: 14px;
+    color: gray;
+}
+
+.btn-action-friend {
+    height: 33px;
+    border: 0;
+    box-shadow: 0;
+    font-size: 13px;
+    color: white;
+    min-width: 120px;
+    border-radius: 0;
+}
+
+.infor td {
+    font-size: 14px;
+    color: gray;
+    border: 0;
+}
+
+.modal-dialog {
+    width: 400px !important;
+    margin: auto;
+    height: 400px !important;
+}
+
+#modalChangeInfo label {
+    font-size: 14px;
+}
+
+#modalChangeInfo input {
+    border-radius: 5;
+    box-shadow: none;
+    font-size: 14px;
+}
+
+.error {
+    font-size: 13px;
+}
+
+#swal2-html-container {
+    font-size: 14px;
+    color: white;
+}
+
+.swal2-popup {
+    background: #444 !important;
+}
+
+.name-firend {
+    font-size: 15px
+}
+
+.friend-active-logs {
+    font-size: 13px;
+    color: gray;
+}
+
+.box-chat {
+    height: 60px;
+    line-height: 60px;
+    font-size: 14px;
+    color: gray;
+    border: 0 !important;
+    border-radius: 0;
+    border-top: 1px solid #eee;
 }
