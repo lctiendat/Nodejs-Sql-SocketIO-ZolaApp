@@ -1,11 +1,15 @@
-// const express =  require('express');
-// app = express()
-// http = require('http')
-// var server = http.createServer(app);
-// const io = require('socket.io')(server);
+const io = require('socket.io')();
 
-// io.on('connection', socket => {
-//     console.log('Connecttion Server');
-// });
+const socket = {
+    io: io
+}
+io.on('connection', socket => {
+    console.log('Connecttion Server');
 
-// server.listen(port);
+    socket.on('send-message', data => {
+        io.emit('user-send-message', data);
+    })
+})
+
+
+module.exports = socket;

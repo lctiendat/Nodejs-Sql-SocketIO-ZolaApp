@@ -1,7 +1,8 @@
 <%- include('../layout/header'); -%>
     <div class="row mt-2" style="height: 70px;background: #E5EFFF;">
         <div class="col-md-3 pr-0">
-            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100 mt-1" alt="" style="max-width: 60px;line-height: 70px">
+            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100 mt-1" alt=""
+                style="max-width: 60px;line-height: 70px">
         </div>
         <div class="col-md-9 pl-0">
             <p style="line-height: 70px;" class="name-firend">Lê Tiến Đạt</p>
@@ -11,12 +12,17 @@
     <div class="col-md-7 p-0 position-relative" style="min-height: 100vh;background: #eee;">
         <div class="card p-2" style="border-radius:0;border-left: 0;">
             <ul class="nav">
-                <li><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100" alt="" style="max-width: 60px;line-height: 50px"></li>
+                <li><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                        alt="" style="max-width: 60px;line-height: 50px"></li>
                 <li class="ml-3 mt-2">
                     <h6> Lê Tiến Đạt</h6>
                     <span class="friend-active-logs">Hoạt động 2 giờ trước</span>
                 </li>
             </ul>
+        </div>
+
+        <div id="content-chat" class="ml-2">
+
         </div>
         <div class="card w-100 position-absolute position-relative" style="bottom: 0;">
             <div class="card" style="height: 50px;line-height: 50px;border-radius: 0;">
@@ -25,8 +31,38 @@
                     <li class="bi bi-card-image ml-3" style="font-size: 20px;"></li>
                 </ul>
             </div>
-            <input type="text" class="form-control box-chat shadow-none w-100" placeholder="Nhập tin nhắn tới Đạt">
-            <i class="bi bi-hand-thumbs-up-fill position-absolute" style="right: 30px;font-size: 30px;top: 55px; color: orange;"></i>
+            <input type="text" class="form-control box-chat shadow-none w-100" id="chat-message"
+                placeholder="Nhập tin nhắn tới Đạt">
+            <i class="bi bi-hand-thumbs-up-fill position-absolute"
+                style="right: 30px;font-size: 30px;top: 55px; color: orange;"></i>
         </div>
     </div>
     <%- include('../layout/footer'); -%>
+
+        <script>
+            const socket = io('http://localhost:3000');
+
+            $('#chat-message').keypress(function (e) {
+                if (e.which == 13) {
+                    var message = $(this).val();
+                    socket.emit('send-message', message);
+                    $(this).val('');
+                }
+            });
+
+            socket.on('user-send-message', function (data) {
+                console.log(socket.id);
+                $('#content-chat').append(`
+                    <ul class="nav">
+                <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                        alt="" style="max-width: 40px;line-height: 50px"></li>
+                <li>
+                    <div class="card p-2 content-mess"">
+    ${data}
+<span class=" time-chat">22:22</span>
+                    </div>
+                </li>
+            </ul>
+                   `);
+            });
+        </script>
