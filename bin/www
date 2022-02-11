@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('zolaapp:server');
 var http = require('http');
-var socketApi = require('../controllers/chat.controller')
+var socketApi = require('../chat')
     /**
      * Get port from environment and store in Express.
      */

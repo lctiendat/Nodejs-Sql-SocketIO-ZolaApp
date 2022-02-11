@@ -1,15 +1,25 @@
-const io = require('socket.io')();
+const serverConfig = require('../config/server.config');
+const chatCPM = require('../components/chat.component');
 
-const socket = {
-    io: io
-}
-io.on('connection', socket => {
-    console.log('Connecttion Server');
+function getFriendMessage(req, res) {
+    const userEmail = req.session.User.email
+    const friendEmail = req.body.email
 
-    socket.on('send-message', data => {
-        io.emit('user-send-message', data);
+    chatCPM.getFriendMessage(userEmail, friendEmail).then(data => {
+        console.log(data);
+        return res.json({
+            status: true,
+            data: data
+        })
+    }).then(e => {
+        console.log(e);
+        return res.json({
+            status: false,
+            msg: 'Lấy tin nhắn bạn bè thất bại'
+        })
     })
-})
+}
 
-
-module.exports = socket;
+module.exports = {
+    getFriendMessage
+}

@@ -1,5 +1,5 @@
 <%- include('../layout/header'); -%>
-    <div class="row mt-2" style="height: 70px;background: #E5EFFF;">
+    <div class="row mt-2 box-user" style="height: 70px;background: #E5EFFF;" data-email="contact.letiendat@gmail.com">
         <div class="col-md-3 pr-0">
             <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100 mt-1" alt=""
                 style="max-width: 60px;line-height: 70px">
@@ -21,7 +21,7 @@
             </ul>
         </div>
 
-        <div id="content-chat" class="ml-2">
+        <div id="content-chat" class="ml-2" style="max-height:100vh;overflow-y:scroll">
 
         </div>
         <div class="card w-100 position-absolute position-relative" style="bottom: 0;">
@@ -51,7 +51,6 @@
             });
 
             socket.on('user-send-message', function (data) {
-                console.log(socket.id);
                 $('#content-chat').append(`
                     <ul class="nav">
                 <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
@@ -65,4 +64,45 @@
             </ul>
                    `);
             });
+            let myCnn = []
+            socket.on('list-user', (users) => {
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i].id == socket.id) {
+                        myCnn.push({
+                            id: users[i].id,
+                            email: users[i].email,
+                            self: true
+                        })
+                    }
+                    else {
+                        myCnn.push({
+                            id: users[i].id,
+                            email: users[i].email,
+                            self: false
+                        })
+                    }
+                }
+                console.log(myCnn)
+            })
+            socket.on('new-user', data => {
+                console.log(data)
+            })
+
+            $('.box-user').click((e) => {
+                e.stopPropagation()
+                //  const email = $(e.target).attr('data-email');
+                const email = 'contact.letiendat@gmail.com'
+                $.ajax({
+                    url: '/chat/friend',
+                    type: 'POST',
+                    data: {
+                        email
+                    },
+                    dataType: 'JSON',
+                    success(res) {
+                        console.log(res)
+                    }
+
+                })
+            })
         </script>

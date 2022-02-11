@@ -5,6 +5,6 @@ module.exports = (app) => {
     /**
      * Trang chủ
      */
-    app.get('/',  homeController.index)
+    app.get('/',isAuth.isAuthorize, homeController.index)
 
 }
