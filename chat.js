@@ -8,6 +8,9 @@ const chatCPM = require('./components/chat.component');
 io.on('connection', (socket) => {
     console.log('Connecttion Server');
 
+    /**
+    * Lấy danh sách người dùng đã connect
+    */
     const UserLogin = new Promise((res, rej) => {
         socket.on('userLogin', data => {
             res(data)
@@ -27,6 +30,9 @@ io.on('connection', (socket) => {
         console.log(users);
     })
 
+    /**
+     * Gửi tin nhắn private
+     */
     const userSendMsgPrivate = new Promise((res, rej) => {
         socket.on('send-message-private', (data) => {
             res(data)
@@ -39,7 +45,7 @@ io.on('connection', (socket) => {
             console.log(result);
             socket.join(`'${result.room}'`)
             socket.to(`'${result.room}'`).emit('receive-message-private', data)
-        }).catch((err) =>{
+        }).catch((err) => {
             console.log(err);
         })
     })
@@ -49,10 +55,6 @@ io.on('connection', (socket) => {
     //         socket.to(`1`).emit('receive-message-private', data)
     //     })
     // })socket.on('send-message-private', (data) => {
-
-    socket.on('send-message', data => {
-        socket.emit('user-send-message', data);
-    })
 
     socket.on('disconnect', socket => {
         console.log('Disconnect Server');
