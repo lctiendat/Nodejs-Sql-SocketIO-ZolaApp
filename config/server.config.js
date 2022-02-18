@@ -21,7 +21,15 @@ function getToken() {
   return result;
 }
 
+/**
+ * Tạo phòng chat
+ */
+function creatRoom() {
+  return `room-${getToken()}`;
+}
+
 module.exports = {
   getCurrenTime,
-  getToken
+  getToken,
+  creatRoom
 } 
