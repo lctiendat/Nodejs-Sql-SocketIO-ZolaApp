@@ -4,6 +4,23 @@ const socket = {
 }
 const chatCPM = require('./components/chat.component');
 
+let daLoginNamespace = io.of('dalogin');
+daLoginNamespace.use(function (socket, next) {
+    let token = socket.handshake.query.token;
+    // check token xem có đúng token của user đã login ko
+    // nếu đúng thì gán user info vào socket // rồi có thể, lấy tất cả các room từ chat để socket join
+    if (token)
+        next();
+    // ko đúng thì 
+    // next(new Error('Authen user faile'))
+});
+daLoginNamespace.on('connection', socket => {
+    //user login sẽ vào đây
+    socket.on('send_message', data => {
+
+    });
+
+});
 
 io.on('connection', (socket) => {
     console.log('Connecttion Server');
@@ -11,13 +28,7 @@ io.on('connection', (socket) => {
     /**
     * Lấy danh sách người dùng đã connect
     */
-    const UserLogin = new Promise((res, rej) => {
-        socket.on('userLogin', data => {
-            res(data)
-        })
-    })
-
-    UserLogin.then(data => {
+    socket.on('userLogin', data => {
         socket.emailUser = data
         const users = []
         for (let [id, socket] of io.of('/').sockets) {
@@ -27,34 +38,28 @@ io.on('connection', (socket) => {
             })
         }
         socket.emit('list-user', users)
+        chatCPM.getAllRoomOfUser(data).then(rooms => {
+            for (let index = 0; index < rooms.length; index++) {
+                const element = rooms[index];
+                socket.join((element.room).toString())
+            }
+        }) 
+       // socket.join('11')
         console.log(users);
     })
+
 
     /**
      * Gửi tin nhắn private
      */
-    const userSendMsgPrivate = new Promise((res, rej) => {
-        socket.on('send-message-private', (data) => {
-            res(data)
-        })
-    })
-
-    userSendMsgPrivate.then(data => {
-        console.log(data);
+    socket.on('send-message-private', (data) => {
         chatCPM.getRoom(data.receiver, data.sender).then((result) => {
-            console.log(result);
-            socket.join(`'${result.room}'`)
-            socket.to(`'${result.room}'`).emit('receive-message-private', data)
+            //   socket.join(`'${result.room}'`)
+            socket.to('11').emit('receive-message-private', data)
         }).catch((err) => {
             console.log(err);
         })
     })
-    //     console.log(data);
-    //     chatCPM.getRoom(data.receiver, data.sender).then((result) => {
-    //         socket.join(`1`)
-    //         socket.to(`1`).emit('receive-message-private', data)
-    //     })
-    // })socket.on('send-message-private', (data) => {
 
     socket.on('disconnect', socket => {
         console.log('Disconnect Server');

@@ -54,9 +54,23 @@ function getRoom(userEmail, friendEmail) {
     })
 }
 
+/**
+ * Lấy tất cả phòng của người dùng
+ */
+function getAllRoomOfUser(userEmail) {
+    return new Promise((res, rej) => {
+        connection.query(`SELECT room FROM friends WHERE delete_flag = 0 AND status = 'accept' AND userEmail = '${userEmail}'  OR friendEmail = '${userEmail}'
+        `, (err, rows) => {
+            if (err) return rej(err)
+            res(rows)
+        })
+    })
+}
+
 module.exports = {
     getFriendMessage,
     getFriendHaveMessage,
     saveMessage,
-    getRoom
+    getRoom,
+    getAllRoomOfUser
 }
