@@ -54,8 +54,8 @@
                                 style="height: 50px;line-height: 50px;border-radius: 0; border-left: 0 !important;">
                                 <ul class="nav ml-3">
                                     <li class="bi bi-paperclip" style="font-size: 20px;"></li>
-                                    <input class="bi bi-card-image ml-3" type="file" name="file"
-                                        style="font-size: 20px;">
+                                    <li class="bi bi-card-image ml-3" style="font-size: 20px;"></li>
+                                    <input class="d-none" type="file" id="fileMsg" name="file" style="font-size: 20px;">
                                 </ul>
                             </div>
                         </form>
@@ -122,7 +122,8 @@
                                                         //  id: element.id,
                                                         message,
                                                         receiver,
-                                                        sender: $('#sessionUserEmail').val()
+                                                        sender: $('#sessionUserEmail').val(),
+                                                        type: 'text'
                                                     })
                                                 }
                                             });
@@ -135,27 +136,31 @@
 
                     socket.on('connect', () => {
                         socket.on('receive-message-private', (data) => {
-                            console.log(data);
-                            $('#content-chat').append(`
+      
+                        //    if (data.sender == $('.name-friend-chat').data('email') && data.receiver == $('#sessionUserEmail').val()) {
+                                console.log(data);
+                                $('#content-chat').append(`
                                                         <div class="row gx-0"><ul class="nav justify-content-start">
                                                     <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
                                                             alt="" style="max-width: 40px;line-height: 50px"></li>
                                                     <li>
-                                                        <div class="card p-2 content-mess">
-                                                             ${data.message}
-                                                            <span class=" time-chat">hihi</span>
-                                                        </div>
+                                                        ${(() => {
+                                        if (data.type == 'text') {
+                                            return `<div class="card p-2 content-mess">
+                                                         ${data.message}
+                                                     <span class=" time-chat">hihi</span>
+                                                    </div>`
+                                        }
+                                        else if (data.type == 'img') {
+                                            return ` <img src="${data.message}" class="w-100"
+                                                            alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">`
+                                        }
+                                    })()}
                                                     </li>
                                                 </ul>   </div> 
                                                                     `).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
-                            // Swal.fire({
-                            //     text: `Bạn vừa nhận được tin nhắn mới`,
-                            //     showConfirmButton: false,
-                            //     timer: 3000,
-                            //     position: 'top-end'
-                            // })
+                          //  }
                         })
-
                         socket.emit('userLogin', $('#sessionUserEmail').val());
                     })
 
@@ -179,13 +184,21 @@
 
                                     for (let i = 0; i < res.data.length; i++) {
                                         if (res.data[i].isMe) {
-                                            data += `<div class="row gx-0">
+                                            data += `<div class="row gx-0 mt-4">
                                                                 <ul class="nav justify-content-end">
-                                                <li>
-                                                    <div class="card p-2 content-mess">
+                                                <li>${(() => {
+                                                    if (res.data[i].type == 'text') {
+                                                        return `<div class="card p-2 content-mess">
                                                          ${res.data[i].content}
                                                      <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
-                                                    </div>
+                                                    </div>`
+                                                    }
+                                                    else if (res.data[i].type == 'img') {
+                                                        return ` <img src="${res.data[i].content}" class="w-100"
+                                                            alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">`
+                                                    }
+                                                })()}
+                                                    
                                                 </li>
                                                 <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
                                                         alt="" style="max-width: 40px;line-height: 50px"></li>
@@ -195,14 +208,22 @@
                                         }
                                         else {
                                             data += `
-                                                    <div class="row gx-0"><ul class="nav justify-content-start">
+                                                    <div class="row gx-0 mt-4"><ul class="nav justify-content-start">
                                                 <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
                                                         alt="" style="max-width: 40px;line-height: 50px"></li>
                                                 <li>
-                                                    <div class="card p-2 content-mess">
+                                                    ${(() => {
+                                                    if (res.data[i].type == 'text') {
+                                                        return `<div class="card p-2 content-mess">
                                                          ${res.data[i].content}
-                                                        <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
-                                                    </div>
+                                                     <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
+                                                    </div>`
+                                                    }
+                                                    else if (res.data[i].type == 'img') {
+                                                        return ` <img src="${res.data[i].content}" class="w-100"
+                                                            alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">`
+                                                    }
+                                                })()}
                                                 </li>
                                             </ul>   </div> 
                                                                 `
@@ -214,4 +235,50 @@
                             }
                         })
                     })
+
+                    $('.bi-card-image').click((e) => {
+                        $('#fileMsg').click()
+                    })
+
+                    $('#fileMsg').change((e) => {
+                        const file = e.target.files[0];
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        //  console.log($('#fileMsg')[0].files[0].name)   ;
+                        $.ajax({
+                            url: '/chat/image',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success(res) {
+                                if (res.status) {
+                                    $('#content-chat').append(`
+                                                        <div class="row gx-0 mt-2"><ul class="nav justify-content-end">
+                                                    <li>
+                                                             <img src="${res.path}" class="w-100"
+                                                            alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">                                                      
+                                                    </li>
+                                                    <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                                                            alt="" style="max-width: 40px;line-height: 50px"></li>
+                                                </ul>   </div> 
+                                                                    `).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
+                                    dataUser.then((data) => {
+                                        data.forEach(element => {
+                                            if (element.email == receiver) {
+                                                socket.emit('send-message-private', {
+                                                    //  id: element.id,
+                                                    message: `/uploads/${$('#fileMsg')[0].files[0].name}`,
+                                                    receiver : $('.name-friend-chat').data('email'),
+                                                    sender: $('#sessionUserEmail').val(),
+                                                    type: 'img'
+                                                })
+                                            }
+                                        });
+                                    })
+                                }
+                            }
+                        })
+                    })
+
                 </script>

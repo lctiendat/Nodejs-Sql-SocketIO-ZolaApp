@@ -109,10 +109,21 @@ function listFriend(req, res) {
 function acceptFriendRequest(req, res) {
     const userEmail = req.session.User.email
     const friendEmail = req.body.email
+
+    const dataMsg = [{
+        userEmail,
+        friendEmail,
+        content: 'Chúng ta đã trở thành bạn bè',
+        type: 'text',
+        created: serverConfig.getCurrenTime()
+    }]
+
     friendCPM.acceptFriend(userEmail, friendEmail).then(result => {
-        return res.json({
-            status: true,
-            msg: 'Đã chấp nhận lời mời kết bạn'
+        appCpm.save('messages', dataMsg).then(result => {
+            return res.json({
+                status: true,
+                msg: 'Đã chấp nhận lời mời kết bạn'
+            })
         })
     }).catch(err => {
         console.log(err)

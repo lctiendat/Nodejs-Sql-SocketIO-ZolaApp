@@ -4,6 +4,9 @@ const socket = {
 }
 const chatCPM = require('./components/chat.component');
 
+
+
+//getRoomUser()
 let daLoginNamespace = io.of('dalogin');
 daLoginNamespace.use(function (socket, next) {
     let token = socket.handshake.query.token;
@@ -25,6 +28,13 @@ daLoginNamespace.on('connection', socket => {
 io.on('connection', (socket) => {
     console.log('Connecttion Server');
 
+    function getRoomUser(rooms) {
+        rooms.forEach((room) => {
+            if (room != null)
+                socket.join(room.toString())
+        })
+    }
+
     /**
     * Lấy danh sách người dùng đã connect
     */
@@ -37,25 +47,26 @@ io.on('connection', (socket) => {
                 email: socket.emailUser
             })
         }
+
         socket.emit('list-user', users)
         chatCPM.getAllRoomOfUser(data).then(rooms => {
-            for (let index = 0; index < rooms.length; index++) {
-                const element = rooms[index];
-                socket.join((element.room).toString())
-            }
-        }) 
-       // socket.join('11')
-        console.log(users);
+            let arrRoom = [];
+            rooms.forEach(room => {
+                arrRoom.push(room.room)
+            });
+            getRoomUser(arrRoom)
+        })
+        //  console.log(arrRoom);
     })
 
+    //    socket.join('room-n9vBArgwS5xhdp8T1YNf')
 
     /**
      * Gửi tin nhắn private
      */
     socket.on('send-message-private', (data) => {
         chatCPM.getRoom(data.receiver, data.sender).then((result) => {
-            //   socket.join(`'${result.room}'`)
-            socket.to('11').emit('receive-message-private', data)
+            socket.to(JSON.parse(JSON.stringify(result))[0].room).emit('receive-message-private', data)
         }).catch((err) => {
             console.log(err);
         })

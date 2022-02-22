@@ -25,14 +25,15 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   secret: 'somesecret',
-  cookie: { expires : Date.now() + (30 * 86400 * 1000) },
+  cookie: { expires: Date.now() + (30 * 86400 * 1000) },
   store: new MemoryStore({
     checkPeriod: 86400000
   }),
 }));
 
-     
+
 app.use('/assets', express.static('public'))
+app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

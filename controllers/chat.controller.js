@@ -46,6 +46,7 @@ function saveMessage(req, res) {
         userEmail,
         friendEmail,
         content,
+        type: 'text',
         created: serverConfig.getCurrenTime()
     }]
 
@@ -62,6 +63,37 @@ function saveMessage(req, res) {
     })
     //  console.log(req)
 
+}
+
+/**
+ * Gửi tin nhắn hình ảnh
+ */
+function sendMsgImg(req, res) {
+    const userEmail = req.session.User.email
+    //  const friendEmail = req.body.receiver
+    const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
+    const friendEmail = 'lctiendat1@gmail.com'
+    const content = newPath
+
+    const data = [{
+        userEmail,
+        friendEmail,
+        content,
+        type: 'img',
+        created: serverConfig.getCurrenTime()
+    }]
+    appCpm.save('messages', data).then(resultInsert => {
+        return res.json({
+            status: true,
+            path: newPath
+        });
+    }).catch(e => {
+        console.log(e)
+        return res.json({
+            status: false,
+            msg: 'Lưu tin nhắn thất bại'
+        });
+    })
 }
 
 function getMsg(data, userEmail) {
@@ -81,5 +113,6 @@ function getMsg(data, userEmail) {
 
 module.exports = {
     getFriendMessage,
-    saveMessage
+    saveMessage,
+    sendMsgImg
 }
