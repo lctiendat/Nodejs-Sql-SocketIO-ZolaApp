@@ -104,6 +104,21 @@ function listFriend(req, res) {
 }
 
 /**
+ * Lấy danh sách bạn bè
+ */
+function getListFriend(req, res) {
+    const userEmail = req.session.User.email
+    friendCPM.getFriend(userEmail).then(listFriend => {
+        return res.json({
+            status: true,
+            data: listFriend
+        })
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+/**
  * Đồng ý kết bạn
  */
 function acceptFriendRequest(req, res) {
@@ -159,5 +174,6 @@ module.exports = {
     listFriend,
     addFriend,
     acceptFriendRequest,
-    cancelFriendRequest
+    cancelFriendRequest,
+    getListFriend
 }

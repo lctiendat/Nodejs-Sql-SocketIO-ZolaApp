@@ -5,6 +5,7 @@ function signup() {
         check('email', 'Email không được để trống').not().isEmpty(),
         check('email', 'Email không đúng định dạng').isEmail(),
         check('password', 'Mật khẩu không được để trống').not().isEmpty(),
+        check('name', 'Tên không được để trống').not().isEmpty(),
     ]
 }
 

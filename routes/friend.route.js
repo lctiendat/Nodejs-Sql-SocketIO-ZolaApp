@@ -29,4 +29,9 @@ module.exports = (app) => {
      * Từ chối lời mời kết bạn
      */
     app.post('/friend/cancel', urlencodedParser, friendController.cancelFriendRequest)
+
+    /**
+     * Lấy danh sách bạn bè
+     */
+    app.post('/friend/get', urlencodedParser, friendController.getListFriend)
 }

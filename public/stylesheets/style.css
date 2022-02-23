@@ -135,3 +135,7 @@ ul {
     color: gray;
 }
 
+#createRoom input::placeholder {
+    font-size: 14px;
+}
+

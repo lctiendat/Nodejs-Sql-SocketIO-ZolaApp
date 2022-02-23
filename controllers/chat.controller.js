@@ -12,6 +12,7 @@ function getFriendMessage(req, res) {
 
     chatCPM.getFriendMessage(userEmail, friendEmail).then(data => {
         userCpm.getUserByEmail(friendEmail).then(user => {
+            console.log(data);
             return res.json({
                 status: true,
                 data: getMsg(data, userEmail),
@@ -70,11 +71,11 @@ function saveMessage(req, res) {
  */
 function sendMsgImg(req, res) {
     const userEmail = req.session.User.email
-    //  const friendEmail = req.body.receiver
     const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
-    const friendEmail = 'lctiendat1@gmail.com'
+    const friendEmail = req.body.email
     const content = newPath
 
+    console.log(friendEmail);
     const data = [{
         userEmail,
         friendEmail,
@@ -96,6 +97,39 @@ function sendMsgImg(req, res) {
     })
 }
 
+/**
+ * Gửi tin nhắn kèm file
+ */
+function sendMsgFile(req, res) {
+    const userEmail = req.session.User.email
+    const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
+    const friendEmail = req.body.email
+    const content = newPath
+
+    const data = [{
+        userEmail,
+        friendEmail,
+        content,
+        type: 'file',
+        created: serverConfig.getCurrenTime()
+    }]
+    appCpm.save('messages', data).then(resultInsert => {
+        return res.json({
+            status: true,
+            path: newPath
+        });
+    }).catch(e => {
+        console.log(e)
+        return res.json({
+            status: false,
+            msg: 'Lưu tin nhắn thất bại'
+        });
+    })
+}
+
+/**
+ * Lấy tin nhắn
+ */
 function getMsg(data, userEmail) {
     let arr = [];
     for (let i = 0; i < data.length; i++) {
@@ -114,5 +148,6 @@ function getMsg(data, userEmail) {
 module.exports = {
     getFriendMessage,
     saveMessage,
-    sendMsgImg
+    sendMsgImg,
+    sendMsgFile
 }

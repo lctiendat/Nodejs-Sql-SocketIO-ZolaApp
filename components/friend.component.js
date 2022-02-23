@@ -31,7 +31,6 @@ function getFriend(userEmail) {
         })
     })
 }
-
 /**
  * Lấy danh sách lời mời kết bạn
  */

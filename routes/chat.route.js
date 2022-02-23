@@ -28,4 +28,9 @@ module.exports = (app) => {
      * Gửi tin nhắn hình ảnh
      */
     app.post('/chat/image', upload.single('file'), urlencodedParser, chatController.sendMsgImg)
+
+    /**
+     * Gửi tin nhắn kèm file
+     */
+    app.post('/chat/file', upload.single('file'), urlencodedParser, chatController.sendMsgFile)
 }

@@ -81,6 +81,10 @@
                     </center>
                     <div id="result"></div>
                     <div class="form-group">
+                        <input type="text" id="name" class="form-control shadow-none" placeholder="Tên của bạn">
+                        <span class="text-danger" id="errName"></span>
+                    </div>
+                    <div class="form-group">
                         <input type="text" id="email" class="form-control shadow-none" placeholder="Tài khoản email">
                         <span class="text-danger" id="errEmail"></span>
                     </div>
@@ -114,6 +118,9 @@
                 if (data[index].param == 'password') {
                     arrError['errPassword'] = data[index].msg
                 }
+                if (data[index].param == 'name') {
+                    arrError['errName'] = data[index].msg
+                }
             }
             return arrError
         }
@@ -121,12 +128,14 @@
         $('button').click((e) => {
             const email = $('#email').val().trim()
             const password = $('#password').val().trim()
+            const name = $('#name').val().trim()
             $.ajax({
                 url: '/signup',
                 type: 'POST',
                 data: {
                     email,
-                    password
+                    password,
+                    name
                 },
                 dataType: 'JSON',
                 success(res) {
@@ -146,6 +155,7 @@
                         setTimeout(() => {
                             $('#errEmail').html(getMsgErr(res).errEmail == null ? '' : getMsgErr(res).errEmail)
                             $('#errPassword').html(getMsgErr(res).errPassword == null ? '' : getMsgErr(res).errPassword)
+                            $('#errName').html(getMsgErr(res).errName == null ? '' : getMsgErr(res).errName)
                             $('button').removeAttr('disabled').html('Tạo tài khoản')
                         }, 2000);
                     }

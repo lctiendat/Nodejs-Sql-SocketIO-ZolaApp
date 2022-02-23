@@ -23,11 +23,11 @@
                 <div class="wellcome">
                     <div class="row" style="background: #ffffff; min-height: 100vh;">
                         <div class="col-md-8 mx-auto">
-                            <center style="margin-top: 100px;">Chào mừng bạn đến voiws mạng xã hội <strong>Zola
+                            <center style="margin-top: 100px;">Chào mừng bạn đến với mạng xã hội <strong>Zola
                                     !</strong> <br>
                                 <span style="font-size: 13px;" class="mt-3">Khám phá những tiện ích hỗ trợ làm việc và
                                     trò chuyện cùng
-                                    người thân, bạn bè đuojwc tối ưu háo cho máy tính của bạn</span>
+                                    người thân, bạn bè được tối ưu hoá cho máy tính của bạn</span>
                                 <img src="https://chat.zalo.me/assets/quick-message-onboard.3950179c175f636e91e3169b65d1b3e2.png"
                                     alt="" class="w-100">
                             </center>
@@ -41,7 +41,8 @@
                                     class="w-100" alt="" style="max-width: 60px;line-height: 50px"></li>
                             <li class="ml-3 mt-2">
                                 <h6 class="name-friend-chat"> Lê Tiến Đạt</h6>
-                                <span class="friend-active-logs">Hoạt động 2 giờ trước</span>
+                                <span class="friend-active-logs"><i class="bi bi-circle-fill text-danger"
+                                        style="font-size:7px"> </i> Không hoạt động</span>
                             </li>
                         </ul>
                     </div>
@@ -49,16 +50,19 @@
                     <div id="content-chat" class="w-100 pb-2" style="max-height:70vh;overflow-y: scroll;">
                     </div>
                     <div class="card w-100 position-absolute position-relative" style="bottom: 0;">
-                        <form id="form-msg" method="post" enctype="multipart/form-data">
-                            <div class="card"
-                                style="height: 50px;line-height: 50px;border-radius: 0; border-left: 0 !important;">
-                                <ul class="nav ml-3">
-                                    <li class="bi bi-paperclip" style="font-size: 20px;"></li>
-                                    <li class="bi bi-card-image ml-3" style="font-size: 20px;"></li>
+                        <div class="card"
+                            style="height: 50px;line-height: 50px;border-radius: 0; border-left: 0 !important;">
+                            <ul class="nav ml-3">
+                                <li class="bi bi-paperclip" style="font-size: 20px;"></li>
+                                <li class="bi bi-card-image ml-3" style="font-size: 20px;"></li>
+                                <form id="form-msg" method="post" enctype="multipart/form-data">
                                     <input class="d-none" type="file" id="fileMsg" name="file" style="font-size: 20px;">
-                                </ul>
-                            </div>
-                        </form>
+                                </form>
+                                <form method="post" id="form-msg-file" enctype="multipart/form-data">
+                                    <input type="file" name="file" id="msg-file" class="d-none">
+                                </form>
+                            </ul>
+                        </div>
                         <input type="text" class="form-control box-chat shadow-none w-100" id="chat-message"
                             placeholder="Nhập tin nhắn">
                         <i class="bi bi-hand-thumbs-up-fill position-absolute"
@@ -84,6 +88,11 @@
                         })
                     })
 
+                    function getCurrentTime() {
+                        const today = new Date();
+                        return today.getHours() + ":" + today.getMinutes();
+                    }
+
                     $('#chat-message').keypress((e) => {
                         if (e.which == 13 && $('#chat-message').val().trim() != '') {
                             const message = $('#chat-message').val().trim();
@@ -101,12 +110,12 @@
                                     if (res.status) {
 
                                         $('#content-chat').append(`
-                                        <div class="row gx-0">
+                                        <div class="row gx-0 mt-4">
                                                                 <ul class="nav justify-content-end">
                                                 <li>
                                                     <div class="card p-2 content-mess">
                                                          ${message}
-                                                     <span class=" time-chat">hi</span>
+                                                     <span class=" time-chat">${getCurrentTime()}</span>
                                                     </div>
                                                 </li>
                                                 <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
@@ -123,7 +132,8 @@
                                                         message,
                                                         receiver,
                                                         sender: $('#sessionUserEmail').val(),
-                                                        type: 'text'
+                                                        type: 'text',
+                                                        time: getCurrentTime()
                                                     })
                                                 }
                                             });
@@ -136,32 +146,48 @@
 
                     socket.on('connect', () => {
                         socket.on('receive-message-private', (data) => {
-      
-                        //    if (data.sender == $('.name-friend-chat').data('email') && data.receiver == $('#sessionUserEmail').val()) {
-                                console.log(data);
-                                $('#content-chat').append(`
-                                                        <div class="row gx-0"><ul class="nav justify-content-start">
+
+                            //    if (data.sender == $('.name-friend-chat').data('email') && data.receiver == $('#sessionUserEmail').val()) {
+                            console.log(data);
+                            $('#content-chat').append(`
+                                                        <div class="row gx-0 mt-4"><ul class="nav justify-content-start">
                                                     <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
                                                             alt="" style="max-width: 40px;line-height: 50px"></li>
                                                     <li>
                                                         ${(() => {
-                                        if (data.type == 'text') {
-                                            return `<div class="card p-2 content-mess">
+                                    if (data.type == 'text') {
+                                        return `<div class="card p-2 content-mess">
                                                          ${data.message}
-                                                     <span class=" time-chat">hihi</span>
+                                                     <span class=" time-chat">${data.time}</span>
                                                     </div>`
-                                        }
-                                        else if (data.type == 'img') {
-                                            return ` <img src="${data.message}" class="w-100"
+                                    }
+                                    else if (data.type == 'img') {
+                                        return ` <img src="${data.message}" class="w-100"
                                                             alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">`
-                                        }
-                                    })()}
+                                    }
+                                    else {
+                                        return `<div class="card p-2 content-mess">
+                                                             <a href="${data.message}"
+                                                            alt="" download>${(data.message).replace('/uploads/', '')}</a>
+                                                            </div>`
+                                    }
+                                })()}
                                                     </li>
                                                 </ul>   </div> 
                                                                     `).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
-                          //  }
+                            //  }
                         })
                         socket.emit('userLogin', $('#sessionUserEmail').val());
+                        socket.on('user_connected', email => {
+                            if ($('.name-friend-chat').data('email') == email) {
+                                $('.friend-active-logs').html('<i class="bi bi-circle-fill text-success" style="font-size:7px"> </i> Đang hoạt động')
+                            }
+                        })
+                        socket.on('user-disconnect', email => {
+                            if ($('.name-friend-chat').data('email') == email) {
+                                $('.friend-active-logs').html('<i class="bi bi-circle-fill text-danger" style="font-size:7px"> </i> Không hoạt động')
+                            }
+                        })
                     })
 
                     // Lấy tin nhắn 
@@ -179,6 +205,7 @@
                             },
                             dataType: 'JSON',
                             success(res) {
+                                console.log(res);
                                 if (res.status) {
                                     let data = ''
 
@@ -223,6 +250,12 @@
                                                         return ` <img src="${res.data[i].content}" class="w-100"
                                                             alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">`
                                                     }
+                                                    else {
+                                                        return `<div class="card p-2 content-mess">
+                                                             <a href="${res.data[i].content}"
+                                                            alt="" download>${(res.data[i].content).replace('/uploads/', '')}</a>
+                                                            </div>`
+                                                    }
                                                 })()}
                                                 </li>
                                             </ul>   </div> 
@@ -231,6 +264,14 @@
                                     }
                                     $('#content-chat').html(data).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
                                     $('.name-friend-chat').html(res.user[0].name).attr('data-email', email)
+                                    dataUser.then(users => {
+                                        users.every(user => {
+                                            if (user.email == email) {
+                                                $('.friend-active-logs').html(`<i class="bi bi-circle-fill text-success" style="font-size:7px"> </i> Đang hoạt động`)
+                                                return false
+                                            }
+                                        })
+                                    })
                                 }
                             }
                         })
@@ -240,11 +281,17 @@
                         $('#fileMsg').click()
                     })
 
+                    $('.bi-paperclip').click((e) => {
+                        $('#msg-file').click()
+                    })
+
+                    // Gửi tin nhắn kèm hình ảnh
                     $('#fileMsg').change((e) => {
                         const file = e.target.files[0];
+                        const receiver = $('.name-friend-chat').data('email')
                         const formData = new FormData();
                         formData.append('file', file);
-                        //  console.log($('#fileMsg')[0].files[0].name)   ;
+                        formData.append('email', $('.name-friend-chat').data('email'))
                         $.ajax({
                             url: '/chat/image',
                             type: 'POST',
@@ -254,7 +301,7 @@
                             success(res) {
                                 if (res.status) {
                                     $('#content-chat').append(`
-                                                        <div class="row gx-0 mt-2"><ul class="nav justify-content-end">
+                                                        <div class="row gx-0 mt-4"><ul class="nav justify-content-end">
                                                     <li>
                                                              <img src="${res.path}" class="w-100"
                                                             alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">                                                      
@@ -269,9 +316,54 @@
                                                 socket.emit('send-message-private', {
                                                     //  id: element.id,
                                                     message: `/uploads/${$('#fileMsg')[0].files[0].name}`,
-                                                    receiver : $('.name-friend-chat').data('email'),
+                                                    receiver,
                                                     sender: $('#sessionUserEmail').val(),
                                                     type: 'img'
+                                                })
+                                            }
+                                        });
+                                    })
+                                }
+                            }
+                        })
+                    })
+
+                    // Gửi tin nhắn kèm file
+                    $('#msg-file').change((e) => {
+                        const file = e.target.files[0];
+                        const receiver = $('.name-friend-chat').data('email')
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('email', $('.name-friend-chat').data('email'))
+                        $.ajax({
+                            url: '/chat/file',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success(res) {
+                                if (res.status) {
+                                    $('#content-chat').append(`
+                                                        <div class="row gx-0 mt-4"><ul class="nav justify-content-end">
+                                                    <li>
+                                                        <div class="card p-2 content-mess">
+                                                             <a href="${res.path}"
+                                                            alt="" download>${(res.path).replace('/uploads/', '')}</a>
+                                                            </div>                                                     
+                                                    </li>
+                                                    <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                                                            alt="" style="max-width: 40px;line-height: 50px"></li>
+                                                </ul>   </div> 
+                                                                    `).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
+                                    dataUser.then((data) => {
+                                        data.forEach(element => {
+                                            if (element.email == receiver) {
+                                                socket.emit('send-message-private', {
+                                                    //  id: element.id,
+                                                    message: `/uploads/${$('#msg-file')[0].files[0].name}`,
+                                                    receiver,
+                                                    sender: $('#sessionUserEmail').val(),
+                                                    type: 'file'
                                                 })
                                             }
                                         });

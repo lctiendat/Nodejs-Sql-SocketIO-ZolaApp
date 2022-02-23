@@ -15,7 +15,7 @@ function signup(req, res) {
     }
     let email = req.body.email;
     let password = req.body.password;
-
+    let name = req.body.name
     userCpm.checkEmail(email).then(isExisted => {
         if (isExisted) {
             return res.json([{
@@ -24,6 +24,7 @@ function signup(req, res) {
             }]);
         }
         let data = [{
+            name,
             email: email,
             password: md5(password),
             token: serverConfig.getToken(),

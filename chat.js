@@ -35,6 +35,7 @@ io.on('connection', (socket) => {
         })
     }
 
+
     /**
     * Lấy danh sách người dùng đã connect
     */
@@ -56,6 +57,9 @@ io.on('connection', (socket) => {
             });
             getRoomUser(arrRoom)
         })
+
+        socket.broadcast.emit('user_connected', data)
+
         //  console.log(arrRoom);
     })
 
@@ -72,9 +76,10 @@ io.on('connection', (socket) => {
         })
     })
 
-    socket.on('disconnect', socket => {
-        console.log('Disconnect Server');
-    })
+    socket.on("disconnect", (reason) => {
+        socket.broadcast.emit('user-disconnect', socket.emailUser)
+        console.log(`${socket.emailUser} disconnected for ${reason}`);
+    });
 })
 
 

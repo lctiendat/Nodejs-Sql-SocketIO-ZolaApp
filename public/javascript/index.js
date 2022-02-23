@@ -250,4 +250,23 @@ $(document).ready(() => {
         })
     })
 
+    $('.createRoom').click((e) => {
+        $.ajax({
+            url: 'friend/get',
+            type: 'POST',
+            data: {
+
+            },
+            success(res) {
+                console.log(res);
+                if (res.status) {
+                    const data = ''
+                    (res.data).forEach(user => {
+                        data += `<input type="checkbox" name="friend" value="${user.email}">${user.name}<br>`
+                    })
+                    $('#createRoom #list-friend').html(data)
+                }
+            }
+        })
+    })
 })

@@ -29,17 +29,6 @@ function getFriendHaveMessage(userEmail) {
     })
 }
 
-/**
- * Lưu tin nhắn
- */
-function saveMessage(userEmail, friendEmail, content) {
-    return new Promise((res, rej) => {
-        connection.query(`INSERT INTO messages(userEmail, friendEmail, content) VALUES ('${userEmail}', '${friendEmail}', '${content}')`, (err, rows) => {
-            if (err) return rej(err)
-            res(rows)
-        })
-    })
-}
 
 /**
  * Lấy phòng của 2 người dùng
@@ -70,7 +59,6 @@ function getAllRoomOfUser(userEmail) {
 module.exports = {
     getFriendMessage,
     getFriendHaveMessage,
-    saveMessage,
     getRoom,
     getAllRoomOfUser
 }
