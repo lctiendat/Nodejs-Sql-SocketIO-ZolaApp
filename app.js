@@ -10,6 +10,7 @@ const userRouter = require('./routes/user.route');
 const friendRouter = require('./routes/friend.route');
 const homeRouter = require('./routes/home.route');
 const chatRouter = require('./routes/chat.route');
+const groupRouter = require('./routes/group.route');
 
 process.env.TZ = "Asia/Ho_Chi_Minh";
 
@@ -41,6 +42,7 @@ userRouter(app)
 friendRouter(app)
 homeRouter(app)
 chatRouter(app)
+groupRouter(app)
 
 app.use(function (req, res, next) {
   next(createError(404));
@@ -51,9 +53,5 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-app.use((req, res, next) => {
-
-})
 
 module.exports = app;

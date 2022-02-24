@@ -2,6 +2,7 @@ const appCpm = require('../components/app.component');
 const userCPM = require('../components/user.component')
 var { check, validationResult } = require('express-validator');
 const friendCPM = require('../components/friend.component')
+const groupCPN = require('../components/group.component')
 const serverConfig = require('../config/server.config');
 
 /**
@@ -82,11 +83,14 @@ function listFriend(req, res) {
     const userEmail = req.session.User.email
     friendCPM.getFriend(userEmail).then(listFriend => {
         friendCPM.getFriendRequest(userEmail).then(listFriendRequest => {
-            return res.render('friend/list',
-                {
-                    listFriend,
-                    listFriendRequest
-                })
+            groupCPN.getListGroup(userEmail).then(listGroup => {
+                return res.render('friend/list',
+                    {
+                        listFriend,
+                        listFriendRequest,
+                        listGroup
+                    })
+            })
         }).catch(err => {
             console.log(err)
             res.json({

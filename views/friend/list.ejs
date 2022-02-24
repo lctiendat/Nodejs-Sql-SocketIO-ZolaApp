@@ -1,72 +1,111 @@
 <%- include('../layout/header'); -%>
-    <div class="row mt-5" style="height: 70px;background: #F8F8FF">
+    <div class="row mt-5" style="height: 70px;background: #F8F8FF" id="show-list-friend-request">
         <div class="col-md-2 text-center">
-            <i class="fa fa-user-plus text-primary" style="font-size: 30px;line-height: 70px;"></i>
+            <i class="bi bi-person-plus text-primary" style="font-size: 30px;line-height: 70px;"></i>
         </div>
         <div class="col-md-10">
             <span style="font-size: 15px; line-height: 70px;"> Danh
                 sách kết bạn</span>
         </div>
-        <div style="height: 1px;width: 100%;background: #eee;" class="p-0 mt-3"></div>
-        <p class="mt-3" style="font-size: 14px;">Bạn bè (<span id="count-friend">
-                <%= listFriend.length %>
-            </span>)</p>
-        <div id="list-friend"></div>
-        <% for(let i=0 ;i < listFriend.length ;i++) { %>
-            <div class="row mt-2" style="height: 60px;">
-                <div class="col-md-3" style="line-height: 60px;">
-                    <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
-                        style="max-width: 60px;">
-                </div>
-                <div class="col-md-9 pl-0">
-                    <p style="line-height: 60px;font-size: 15px;">
-                        <%= listFriend[i].name %>
-                    </p>
-                </div>
-            </div>
-            <% } %>
     </div>
-    </div>
-    <div class="col-md-7 p-0" style="min-height: 100vh;background: #eee;">
-        <div class="card p-3" style="border-radius:0;border-left: 0;">
-            <h5>Danh sách kết bạn</h5>
+    <div class="row mt-2" style="height: 70px;background: #F8F8FF" id="show-list-group">
+        <div class="col-md-2 text-center">
+            <i class="bi bi-people text-primary" style="font-size: 30px;line-height: 70px;"></i>
         </div>
-        <div class="row mt-3">
-            <div class="col-md-11 mx-auto">
-                <p>Lời mời kết bạn (<span id="count-friend-request">
-                        <%=listFriendRequest.length%>
-                    </span>)</p>
-                <% for(let i=0 ;i < listFriendRequest.length ;i++) { %>
-                    <div class="card p-3">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"
-                                    class="w-100" style="max-width: 60px;">
-                            </div>
-                            <div class="col-md-5">
-                                <p class="mt-3" style="font-size: 15px;">
-                                    <%= listFriendRequest[i].name %>
-                                </p>
-                            </div>
-                            <div class="col-md-4">
-                                <ul class="nav mt-3">
-                                    <li><button class="btn btn-light ml-3 shadow-none btn-cancel-friend"
-                                            data-email="<%= listFriendRequest[i].email %>" style="font-size: 13px;">Bỏ
-                                            qua</button></li>
-                                    <li><button class="btn btn-primary ml-3 shadow-none btn-accept-friend"
-                                            data-email="<%= listFriendRequest[i].email %>"
-                                            data-name="<%= listFriendRequest[i].name %>" style="font-size: 13px;">Đồng
-                                            ý</button>
-                                    </li>
-                                </ul>
+        <div class="col-md-10">
+            <span style="font-size: 15px; line-height: 70px;"> Danh
+                sách nhóm</span>
+        </div>
+    </div>
+    <div style="height: 1px;width: 100%;background: #eee;" class="p-0 mt-3"></div>
+    <p class="mt-3" style="font-size: 14px;">Bạn bè (<span id="count-friend">
+            <%= listFriend.length %>
+        </span>)</p>
+    <div id="list-friend"></div>
+    <% for(let i=0 ;i < listFriend.length ;i++) { %>
+        <div class="row mt-2" style="height: 60px;">
+            <div class="col-md-3" style="line-height: 60px;">
+                <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                    style="max-width: 60px;">
+            </div>
+            <div class="col-md-9 pl-0">
+                <p style="line-height: 60px;font-size: 15px;">
+                    <%= listFriend[i].name %>
+                </p>
+            </div>
+        </div>
+        <% } %>
+            </div>
+            <div class="col-md-7 p-0" style="min-height: 100vh;background: #eee;">
+                <div id="list-friend-request">
+                    <div class="card p-3" style="border-radius:0;border-left: 0;">
+                        <h5>Danh sách kết bạn</h5>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-11 mx-auto">
+                            <p>Lời mời kết bạn (<span id="count-friend-request">
+                                    <%=listFriendRequest.length%>
+                                </span>)</p>
+                            <% for(let i=0 ;i < listFriendRequest.length ;i++) { %>
+                                <div class="card p-3">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"
+                                                class="w-100" style="max-width: 60px;">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <p class="mt-3" style="font-size: 15px;">
+                                                <%= listFriendRequest[i].name %>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <ul class="nav mt-3">
+                                                <li><button class="btn btn-light ml-3 shadow-none btn-cancel-friend"
+                                                        data-email="<%= listFriendRequest[i].email %>"
+                                                        style="font-size: 13px;">Bỏ
+                                                        qua</button></li>
+                                                <li><button class="btn btn-primary ml-3 shadow-none btn-accept-friend"
+                                                        data-email="<%= listFriendRequest[i].email %>"
+                                                        data-name="<%= listFriendRequest[i].name %>"
+                                                        style="font-size: 13px;">Đồng
+                                                        ý</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="list-group" class="d-none">
+                    <div class="card p-3" style="border-radius:0;border-left: 0;">
+                        <h5>Danh sách nhóm</h5>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-11 mx-auto">
+                            <div class="row">
+                                <% listGroup.forEach(group=> { %>
+                                    <div class="col-md-4 mt-3">
+                                        <div class="card p-4" style="max-width: 250px; min-height: 250px;">
+                                            <center>
+                                                <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"
+                                                    class="w-100" style="max-width: 40%;">
+                                                <h6 class="name-group mt-3">
+                                                    <%= group.name %>
+                                                </h6>
+                                                <span class="count-member-group">20 thành viên</span>
+                                            </center>
+                                        </div>
+                                    </div>
+                                    <% }); %>
                             </div>
                         </div>
                     </div>
-                    <% } %>
+                </div>
             </div>
-        </div>
-    </div>
-    </div>
-    </div>
+            </div>
+            </div>
 
-    <%- include('../layout/footer'); -%>
+            <%- include('../layout/footer'); -%>

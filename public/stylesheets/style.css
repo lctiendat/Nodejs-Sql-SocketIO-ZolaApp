@@ -139,3 +139,18 @@ ul {
     font-size: 14px;
 }
 
+.btn {
+    font-size: 14px !important;
+}
+
+.count-member-group {
+    font-size: 13px;
+    color: gray;
+}
+
+.type-mess li:first-child {
+    font-size: 13px;
+    margin-left: 10px;
+    color:rgb( 13,110,253);
+}
+

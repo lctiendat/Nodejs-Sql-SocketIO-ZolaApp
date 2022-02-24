@@ -67,13 +67,16 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control shadow-none border-0 border-bottom" id="nameGroup"
+                <input type="text" class="form-control shadow-none border-0 border-bottom" id="name-group"
                     placeholder="Nhập tên nhóm">
+                <span class="text-danger error" id="errorName"></span>
                 <p class="mt-3" style="font-size: 14px;">Thêm bạn bè vào nhóm</p>
                 <div id="list-friend"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary border-0 text-dark shadow-none" data-dismiss="modal"
+                    style="background: #eee;">Huỷ</button>
+                <button type="button" class="btn btn-primary shadow-none btn-create-group">Tạo nhóm</button>
             </div>
         </div>
     </div>

@@ -260,13 +260,68 @@ $(document).ready(() => {
             success(res) {
                 console.log(res);
                 if (res.status) {
-                    const data = ''
-                    (res.data).forEach(user => {
-                        data += `<input type="checkbox" name="friend" value="${user.email}">${user.name}<br>`
+                    let data = res.data
+                    let newArr = ''
+                    data.forEach(user => {
+                        newArr += `<input type="checkbox" style="border-radius:10px" name="friend" value="${user.email}"> <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
+                        style="height: 30px; width: 30px;"> <span style="font-size:14px">${user.name}</span><br>`
                     })
-                    $('#createRoom #list-friend').html(data)
+                    $('#createRoom #list-friend').html(newArr)
                 }
             }
         })
     })
+
+    var arrFriendRoom = []
+
+    $(document).on('click', '#createRoom input[name="friend"]', (e) => {
+        const email = $(e.target).val()
+        if ($(e.target).is(':checked')) {
+            arrFriendRoom.push(email)
+        }
+        else {
+            arrFriendRoom.splice(arrFriendRoom.indexOf(email), 1)
+        }
+    })
+
+    $('.btn-create-group').click((e) => {
+        e.preventDefault()
+        const name = $('#createRoom #name-group').val().trim()
+
+        $.ajax({
+            url: '/group/create',
+            type: 'POST',
+            data: {
+                name,
+                listMember: arrFriendRoom
+            },
+            success(res) {
+                if (res.status) {
+                    Swal.fire({
+                        text: `${res.msg}`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    $('#createRoom').modal('hide')
+                    $('#createRoom #name-group').val('')
+                    $('#createRoom #list-friend').html('')
+                    arrFriendRoom = []
+                }
+                else {
+                    $('#createRoom #errorName').html(res[0].msg || '')
+                }
+            }
+        })
+    })
+
+    $('#show-list-group').click((e) => {
+        $('#list-group').addClass('d-block').removeClass('d-none')
+        $('#list-friend-request').addClass('d-none').removeClass('d-block')
+    })
+    $('#show-list-friend-request').click((e) => {
+        $('#list-friend-request').addClass('d-block').removeClass('d-none')
+        $('#list-group').addClass('d-none').removeClass('d-block')
+    })
 })
+
+
