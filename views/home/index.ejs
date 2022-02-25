@@ -24,7 +24,7 @@
     </div>
     <div id="list-msg-group" class="d-none">
         <% listGroup.forEach(element=> { %>
-            <div class=" row mt-2 box-user" style="height: 70px;background: #E5EFFF;">
+            <div class=" row mt-2 box-group" style="height: 70px;background: #E5EFFF;">
                 <div class="col-md-3 pr-0">
                     <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100 mt-1"
                         alt="" style="max-width: 60px;line-height: 70px">
@@ -35,8 +35,8 @@
                     </p>
                 </div>
                 <div class="col-md-2">
-                    <i class="bi bi-chat user-chat" style="font-size: 30px;line-height: 70px;"
-                        data-email="<%= element.code %>"></i>
+                    <i class="bi bi-chat group-chat" style="font-size: 30px;line-height: 70px;"
+                        data-code="<%= element.code %>"></i>
                 </div>
             </div>
             <% }); %>
@@ -64,8 +64,9 @@
                     <li><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
                             alt="" style="max-width: 60px;line-height: 50px"></li>
                     <li class="ml-3 mt-2">
-                        <h6 class="name-friend-chat"> Lê Tiến Đạt</h6>
-                        <span class="friend-active-logs"><i class="bi bi-circle-fill text-danger" style="font-size:7px">
+                        <h6 class="name-friend-chat name-group"></h6>
+                        <span class="friend-active-logs count-member-of-group"><i class="bi bi-circle-fill text-danger"
+                                style="font-size:7px">
                             </i> Không hoạt động</span>
                     </li>
                 </ul>
@@ -87,6 +88,8 @@
                     </ul>
                 </div>
                 <input type="text" class="form-control box-chat shadow-none w-100" id="chat-message"
+                    placeholder="Nhập tin nhắn">
+                <input type="text" class="form-control box-chat d-none shadow-none w-100" id="chat-group"
                     placeholder="Nhập tin nhắn">
                 <i class="bi bi-hand-thumbs-up-fill position-absolute"
                     style="right: 30px;font-size: 30px;top: 55px; color: orange;"></i>
@@ -213,7 +216,7 @@
                 })
             })
 
-            // Lấy tin nhắn 
+            // Lấy tin nhắn bạn bè
             $('.user-chat').click((e) => {
                 e.stopPropagation()
                 $('.box-chat-msg').removeClass('d-none').addClass('d-block')
@@ -401,12 +404,109 @@
                 $('#list-msg-group').removeClass('d-block').addClass('d-none')
                 $('#msg-friend').css('cssText', 'color: #0E6EFD !important;')
                 $('#msg-group').css('cssText', 'color: black!important;')
+                $('#chat-message').addClass('d-block').removeClass('d-none')
+                $('#chat-group').addClass('d-none').removeClass('d-block')
             })
             $('#msg-group').click((e) => {
                 $('#list-msg-group').addClass('d-block').removeClass('d-none')
                 $('#list-msg-friend').removeClass('d-block').addClass('d-none')
                 $('#msg-group').css('cssText', 'color: #0E6EFD !important;')
                 $('#msg-friend').css('cssText', 'color: black !important;')
+                // $('.bi-card-image, .bi-paperclip ').attr('data-type', 'group')
+                // $('.bi-card-image').addClass('send-img-group')
+                $('#chat-group').addClass('d-block').removeClass('d-none')
+                $('#chat-message').addClass('d-none').removeClass('d-block')
             })
 
+            // Lấy tin nhắn nhóm
+            $('.group-chat').click(e => {
+                const code = $(e.target).data('code')
+                $('.box-chat-msg').removeClass('d-none').addClass('d-block')
+                $('.wellcome').remove()
+                $.ajax({
+                    url: '/group/get-message',
+                    type: 'POST',
+                    data: {
+                        groupCode: code
+                    },
+                    dataType: 'JSON',
+                    success(res) {
+                        console.log(res);
+                        const data = res.listMsg
+                        let listmess = ''
+
+                        data.forEach(element => {
+                            if (element.email == $('#sessionUserEmail').val()) {
+                                listmess += `
+                                <div class="row gx-0 mt-4">
+                                    <ul class="nav justify-content-end">
+                                        <li>
+                                            <div class="card p-2 content-mess">
+                                                ${element.content}
+                                            </div>
+                                        </li>
+                                        <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                                            alt="" style="max-width: 40px;line-height: 50px"></li>
+                                    </ul>
+                                </div>
+                                `
+                            } else {
+                                listmess += `
+                                        <div class="row gx-0 mt-4">
+                                            <ul class="nav justify-content-start">
+                                                <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                                                    alt="" style="max-width: 40px;line-height: 50px"></li>
+                                                <li>
+                                                    <div class="card p-2 content-mess">
+                                                        <span style="font-size:12px;color:gray">${element.nameUser}<span> <br>
+                                                       <p  class="mt-2" style="color:black;font-size:13px">${element.content} </p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    `
+                            }
+                        })
+                        $('.name-group').html(res.group[0].name).attr('data-code', code)
+                        $('.count-member-of-group').html(`${res.group[0].countMemBer} thành viên`)
+                        $('#content-chat').html(listmess)
+                    }
+                })
+            })
+
+            // Gửi tin nhắn nhóm
+
+            $('#chat-group').keypress((e) => {
+                // e.preventDefault()
+                if (e.which == 13 && $('#chat-group').val() != '') {
+                    const content = $('#chat-group').val()
+                    const code = $('.name-group').data('code')
+                    $('#chat-group').val('')
+                    $.ajax({
+                        url: '/group/send-message',
+                        type: 'POST',
+                        data: {
+                            content,
+                            code
+                        },
+                        dataType: 'JSON',
+                        success(res) {
+                            console.log(res);
+                            if (res.status) {
+                                $('#content-chat').append(`
+                                                        <div class="row gx-0 mt-4"><ul class="nav justify-content-end">
+                                                    <li>
+                                                        <div class="card p-2 content-mess">
+                                                            <p  class="mt-2" style="color:black;font-size:13px">${content} </p>
+                                                        </div>                                                     
+                                                    </li>
+                                                    <li class="mt-2"><img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100"
+                                                            alt="" style="max-width: 40px;line-height: 50px"></li>
+                                                </ul>   </div> 
+                                                                    `).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
+                            }
+                        }
+                    })
+                }
+            }) 
         </script>
