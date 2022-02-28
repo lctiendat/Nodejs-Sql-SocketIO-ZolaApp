@@ -84,6 +84,14 @@ function signin(req, res) {
 }
 
 /**
+ * Đăng xuất
+ */
+function signout(req, res) {
+    req.session.destroy();
+    res.redirect('/signin');
+}
+
+/**
  * Lấy thông tin người dùng
  */
 function getInforUser(req, res) {
@@ -134,5 +142,6 @@ module.exports = {
     signup,
     signin,
     getInforUser,
-    updateInforUser
+    updateInforUser,
+    signout
 }

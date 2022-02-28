@@ -3,7 +3,7 @@ const socket = {
     io: io
 }
 const chatCPM = require('./components/chat.component');
-
+const userCPN = require('./components/user.component');
 
 
 //getRoomUser()
@@ -29,10 +29,7 @@ io.on('connection', (socket) => {
     console.log('Connecttion Server');
 
     function getRoomUser(rooms) {
-        rooms.forEach((room) => {
-            if (room != null)
-                socket.join(room.toString())
-        })
+        socket.join(rooms)
     }
 
 
@@ -51,7 +48,7 @@ io.on('connection', (socket) => {
 
         socket.emit('list-user', users)
         chatCPM.getAllRoomOfUser(data).then(rooms => {
-            let arrRoom = [];
+            let arrRoom = []
             rooms.forEach(room => {
                 arrRoom.push(room.room)
             });
@@ -60,10 +57,7 @@ io.on('connection', (socket) => {
 
         socket.broadcast.emit('user_connected', data)
 
-        //  console.log(arrRoom);
     })
-
-    //    socket.join('room-n9vBArgwS5xhdp8T1YNf')
 
     /**
      * Gửi tin nhắn private
@@ -76,12 +70,29 @@ io.on('connection', (socket) => {
         })
     })
 
+    socket.on('send-message-group', data => {
+        userCPN.getUserByEmail(data.sender).then(user => {
+            //   console.log(user);
+            socket.to((data.code).toString()).emit('receive-message-group', [{
+                sender: user[0].name,
+                message: data.content,
+                code: data.code,
+                type: data.type
+            }])
+        })
+    })
+
     socket.on("disconnect", (reason) => {
         socket.broadcast.emit('user-disconnect', socket.emailUser)
         console.log(`${socket.emailUser} disconnected for ${reason}`);
     });
+
+    /**
+     * Thêm bạn bè
+     */
+    socket.on('add-friend', data => {
+        console.log(data);
+    })
 })
-
-
 
 module.exports = socket;

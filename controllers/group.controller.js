@@ -64,6 +64,9 @@ function getMsgInGroup(req, res) {
         })
 }
 
+/**
+ * Gửi tin nhắn dạng text
+ */
 function saveMsgText(req, res) {
     const group_code = req.body.code
     const email = req.session.User.email
@@ -86,8 +89,80 @@ function saveMsgText(req, res) {
     })
 }
 
+/**
+ * Gưi tin nhắn hình ảnh
+ */
+function saveMsgImage(req, res) {
+    const email = req.session.User.email
+    const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
+    const group_code = req.body.groupCode
+    const content = newPath
+    const type = 'img'
+    const data = [{
+        group_code,
+        email,
+        content,
+        type,
+        created: serverConfig.getCurrenTime(),
+    }]
+    appCpm.save('messages_of_group', data).then(result => {
+        return res.json({
+            status: true,
+            path: newPath
+        });
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+/**
+ * Lưu tin nhắn kèm file
+ */
+function saveMsgFile(req, res) {
+    const email = req.session.User.email
+    const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
+    const group_code = req.body.groupCode
+    const content = newPath
+    const type = 'file'
+    const data = [{
+        group_code,
+        email,
+        content,
+        type,
+        created: serverConfig.getCurrenTime(),
+    }]
+    appCpm.save('messages_of_group', data).then(result => {
+        return res.json({
+            status: true,
+            path: newPath
+        });
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+/**
+ * Lấy danh sácch bạn bè không có trong nhóm chat
+ */
+function getListFriendNotInGroup(req, res) {
+    const group_code = req.body.groupCode
+    const email = req.session.User.email
+    groupCPN.getListFriendNotInGroup(group_code, email)
+        .then(listFriend => {
+            return res.json({
+                status: true,
+                listFriend
+            })
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
 module.exports = {
     createGroup,
     getMsgInGroup,
-    saveMsgText
+    saveMsgText,
+    saveMsgImage,
+    saveMsgFile,
+    getListFriendNotInGroup
 }

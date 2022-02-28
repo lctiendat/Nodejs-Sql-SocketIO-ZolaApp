@@ -49,7 +49,7 @@ function getRoom(userEmail, friendEmail) {
 function getAllRoomOfUser(userEmail) {
     return new Promise((res, rej) => {
         connection.query(`SELECT room FROM friends WHERE delete_flag = 0 AND status = 'accept' AND userEmail = '${userEmail}'  OR friendEmail = '${userEmail}'
-        `, (err, rows) => {
+        UNION SELECT group_code as room from members_of_group WHERE email = '${userEmail}'`, (err, rows) => {
             if (err) return rej(err)
             res(rows)
         })

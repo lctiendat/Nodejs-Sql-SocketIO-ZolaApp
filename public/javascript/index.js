@@ -12,7 +12,6 @@ $(document).ready(() => {
             },
             dataType: 'JSON',
             success(res) {
-                console.log(res)
                 if (res.status) {
                     $('#result').html(`
             <center> <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
@@ -26,7 +25,7 @@ $(document).ready(() => {
                                         : `<button class="btn btn-primary btn-action-friend mt-3 btn-accept-friend shadow-none" data-email="${res.data[0].email}">Đồng ý</button> 
                                         <button class="btn btn-primary btn-action-friend btn-cancel-friend mt-3 shadow-none" data-email="${res.data[0].email}">Bỏ qua</button>`
                                 }
-                                return ` <i class="fa fa-user-check"> </i> Bạn bè`
+                                return `<button class="btn btn-primary"> <i class="fa fa-user-check"> </i> Bạn bè </button>`
                             }
                             else {
                                 return `<button class="btn btn-primary btn-action-friend btn-add-friend mt-3" data-email="${res.data[0].email}">Kết bạn </button>`
@@ -99,6 +98,7 @@ $(document).ready(() => {
                         showConfirmButton: false,
                         timer: 3000
                     })
+
                     $('button[data-dismiss="modal"]').click()
                 }
                 else {

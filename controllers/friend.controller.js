@@ -15,13 +15,19 @@ function searchFriend(req, res) {
     }
     const key = req.body.email
     userCPM.getUser(key).then((dataUser) => {
+        const userEmail = req.session.User.email
         if (dataUser.length == 0) {
             return res.json({
                 status: false,
                 msg: 'Người dùng không tồn tại trong hệ thống'
             })
         }
-        const userEmail = req.session.User.email
+        else if (key == userEmail) {
+            return res.json({
+                status: false,
+                msg: 'Bạn không thể kết bạn với chính mình'
+            })
+        }
         friendCPM.checkFriend(userEmail, key).then(data => {
             if (data.length == 0) {
                 return res.json({

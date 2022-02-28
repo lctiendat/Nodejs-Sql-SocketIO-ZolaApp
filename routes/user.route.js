@@ -12,22 +12,30 @@ module.exports = (app) => {
     });
     app.post('/signup', urlencodedParser, userValidator.signup(), userController.signup)
 
-     /**
-     * Đăng nhập
-     */
+    /**
+    * Đăng nhập
+    */
     app.get('/signin', (req, res) => {
         res.render('user/signin');
     })
     app.post('/signin', urlencodedParser, userValidator.signin(), userController.signin)
 
     /**
+     * Đăng xuất
+     */
+    app.get('/signout', (req, res) => {
+        req.session.destroy();
+        res.redirect('/');
+    })
+
+    /**
      * Lấy thông tin người dùng
      */
-    app.post('/user/getinfor',urlencodedParser,userController.getInforUser)
+    app.post('/user/getinfor', urlencodedParser, userController.getInforUser)
 
     /**
      * Thay đổi thông tin người dùng
      */
-    app.post('/user/changeinfor',urlencodedParser,userValidator.changeinfor(),userController.updateInforUser)
+    app.post('/user/changeinfor', urlencodedParser, userValidator.changeinfor(), userController.updateInforUser)
 
 }
