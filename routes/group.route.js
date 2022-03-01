@@ -43,7 +43,28 @@ module.exports = (app) => {
     app.post('/group/send-file', upload.single('file'), urlencodedParser, groupController.saveMsgFile)
 
     /**
-     * Lấy dánh sách bạn bè khong có trong nhóm chat
+     * Lấy danh sách bạn bè không có trong nhóm chat
      */
     app.post('/group/get-friend-not-in-group', urlencodedParser, groupController.getListFriendNotInGroup)
+
+    /**
+     * Thêm bạn bè vào nhóm chat
+     */
+    app.post('/group/add-friend-to-group', urlencodedParser, groupValidator.addFriendToGroup(), groupController.addFriendToGroup)
+
+    /**
+     * Lấy chủ nhóm chat
+     */
+    app.post('/group/get-owner-group', urlencodedParser, groupController.getGroupOwner)
+
+    /**
+     * Thay đỏi tên nhóm chat
+     */
+    app.post('/group/change-group-name', urlencodedParser, groupController.changeGroupName)
+
+    /**
+     * Lấy tất cả thành viên trong nhóm chat
+     */
+    app.post('/group/get-member', urlencodedParser, groupController.getAllMembersInGroup)
+
 }

@@ -145,7 +145,7 @@ function saveMsgFile(req, res) {
  * Lấy danh sácch bạn bè không có trong nhóm chat
  */
 function getListFriendNotInGroup(req, res) {
-    const group_code = req.body.groupCode
+    let group_code = req.body.groupCode
     const email = req.session.User.email
     groupCPN.getListFriendNotInGroup(group_code, email)
         .then(listFriend => {
@@ -158,11 +158,84 @@ function getListFriendNotInGroup(req, res) {
             console.log(err);
         })
 }
+
+/**
+ * Thêm bạn bè vào nhóm chat
+ */
+function addFriendToGroup(req, res) {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        return res.json(error.array());
+    }
+    const groupCode = req.body.groupCode
+    const listFriend = req.body.listFriend
+
+    listFriend.forEach(element => {
+        const data = [{
+            group_code: groupCode,
+            email: element,
+            created: serverConfig.getCurrenTime(),
+        }]
+        appCpm.save('members_of_group', data).then(result => {
+        })
+        return res.json({
+            status: true,
+            msg: 'Thêm bạn bè vào nhóm thành công'
+        })
+    });
+}
+
+/**
+ * Lấy chủ nhóm chat
+ */
+function getGroupOwner(req, res) {
+    const group_code = req.body.groupCode
+    groupCPN.getGroupByCode(group_code).then(group => {
+        if (group[0].group_owner == req.session.User.email) {
+            return res.json({
+                status: true,
+                group
+            })
+        }
+    })
+}
+
+/**
+ * Thay đổi tên nhóm chat
+ */
+function changeGroupName(req, res) {
+    const group_code = req.body.groupCode
+    const group_name = req.body.groupName
+    groupCPN.changeGroupName(group_code, group_name).then(result => {
+        return res.json({
+            status: true,
+            msg: 'Thay đổi tên nhóm thành công'
+        })
+    })
+}
+
+/**
+ * Lấy tất cả thành viêm trong nhóm chat
+ */
+function getAllMembersInGroup(req, res) {
+    const group_code = req.body.groupCode
+    groupCPN.getListMember(group_code).then(members => {
+        return res.json({
+            status: true,
+            members
+        })
+    })
+}
+
 module.exports = {
     createGroup,
     getMsgInGroup,
     saveMsgText,
     saveMsgImage,
     saveMsgFile,
-    getListFriendNotInGroup
+    getListFriendNotInGroup,
+    addFriendToGroup,
+    getGroupOwner,
+    changeGroupName,
+    getAllMembersInGroup
 }

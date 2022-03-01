@@ -30,7 +30,7 @@
                         alt="" style="max-width: 60px;line-height: 70px">
                 </div>
                 <div class="col-md-7 pl-0">
-                    <p style="line-height: 70px;" class="name-friend">
+                    <p style="line-height: 70px;" class="name-of-group" data-code="<%= element.code %>">
                         <%= element.name %>
                     </p>
                 </div>
@@ -65,6 +65,7 @@
                             alt="" style="max-width: 60px;line-height: 50px"></li>
                     <li class="ml-3 mt-2">
                         <h6 class="name-friend-chat name-group"></h6>
+                        <input type="hidden" id="group-code">
                         <span class="friend-active-logs count-member-of-group"><i class="bi bi-circle-fill text-danger"
                                 style="font-size:7px">
                             </i> Không hoạt động</span>
@@ -110,14 +111,46 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <div id="list-friend"></div>
+                    <span class="err text-danger" id="errAddFriend" style="font-size: 14px;"></span> <br>
+                    <span style="font-size: 14px;">Bạn bè</span>
+                    <div id="list-friend" class="mt-2"></div>
                 </div>
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary border-0 text-dark shadow-none" data-dismiss="modal"
                         style="background: #eee;">Huỷ</button>
-                    <button type="button" class="btn btn-primary shadow-none btn-search-friend">Xác nhận</button>
+                    <button type="button" class="btn btn-primary shadow-none btn-add-friend-to-group">Xác nhận</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal fade" id="modal-list-member-of-group" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel2" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-zoom modal-md">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h6 class="modal-title">Danh sách thành viên</h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <span class="err text-danger" id="errAddFriend" style="font-size: 14px;"></span> <br>
+                    <span style="font-size: 14px;">Thành viên</span>
+                    <div id="list-member" class="mt-2"></div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary border-0 text-dark shadow-none" data-dismiss="modal"
+                        style="background: #eee;">Huỷ</button>
+                    <button type="button" class="btn btn-primary shadow-none btn-add-friend-to-group">Xác nhận</button>
                 </div>
 
             </div>
@@ -285,6 +318,18 @@
                     }
                 })
 
+                socket.on('list-user', data => {
+                    socket.emit('list-user', data)
+                })
+
+                socket.on('add-friend-to-group', data => {
+                    Swal.fire({
+                        text: `Bạn vừa được thêm vào 1 nhóm chat`,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        position: 'top-end'
+                    })
+                })
             })
 
             // Lấy tin nhắn bạn bè
@@ -600,8 +645,10 @@
                             }
                         })
                         $('.name-group').html(`${res.group[0].name} <i class="bi bi-person-plus add-friend-to-group" style="font-size:20px"> </i>`).attr('data-code', code)
-                        $('.count-member-of-group').html(`${res.group[0].countMemBer} thành viên`)
+                        $('.count-member-of-group').html(`<a style="text-decoration:none" class="text-dark" href="#"><i class="bi bi-person"></i>  ${res.group[0].countMemBer} thành viên </a>`)
                         $('#content-chat').html(listmess).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
+                        $('#group-code').attr('value', code)
+
                     }
                 })
             })
@@ -735,11 +782,12 @@
 
             $(document).on('click', '.add-friend-to-group', (e) => {
                 e.preventDefault()
+                let groupCode = $('#group-code').val()
                 $.ajax({
                     url: '/group/get-friend-not-in-group',
                     type: 'POST',
                     data: {
-                        groupCode: $('.name-group').data('code')
+                        groupCode
                     },
                     success(res) {
                         console.log(res);
@@ -747,22 +795,148 @@
                         let listFriend = ''
                         data.forEach(item => {
                             listFriend += `
-                            <li class="list-group-item">
-                                <div class="media align-items-center">
-                                    <div class="media-body">
-                                        <span class="mb-0 text-sm">${item.email}</span>
-                                    </div>
-                                    <div class="media-right">
-                                        <button class="btn btn-sm btn-success add-friend-to-group-in-group" data-email="${item.email}" data-code="${$('.name-group').data('code')}">
-                                            <i class="icon icon-check"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </li>
+                            <input type="checkbox" style="border-radius:10px" name="friend" value="${item.email}"> <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
+                        style="height: 30px; width: 30px;"> <span style="font-size:14px">${item.name}</span><br>
                             `
                         })
                         $('#modal-add-friend-to-group #list-friend').html(listFriend)
                         $('#modal-add-friend-to-group').modal('show')
+                    }
+                })
+            })
+
+
+            var arrFriendAddToGroup = []
+
+            $(document).on('click', '#modal-add-friend-to-group input[name="friend"]', (e) => {
+                const email = $(e.target).val()
+                if ($(e.target).is(':checked')) {
+                    arrFriendAddToGroup.push(email)
+                }
+                else {
+                    arrFriendAddToGroup.splice(arrFriendAddToGroup.indexOf(email), 1)
+                }
+                console.log(arrFriendAddToGroup);
+            })
+
+            //Thêm bạn bè vào nhóm chat
+            $('.btn-add-friend-to-group').click(e => {
+                e.preventDefault()
+                const groupCode = $('#group-code').val()
+                $.ajax({
+                    url: '/group/add-friend-to-group',
+                    type: 'POST',
+                    data: {
+                        groupCode,
+                        listFriend: arrFriendAddToGroup
+                    },
+                    success(res) {
+                        console.log(res);
+                        if (res.status) {
+                            $('#modal-add-friend-to-group').modal('hide')
+                            $('#modal-add-friend-to-group #list-friend').html('')
+                            Swal.fire({
+                                text: `${res.msg}`,
+                                showConfirmButton: false,
+                                timer: 3000
+                            })
+                            socket.emit('add-friend-to-group',
+                                arrFriendAddToGroup
+                            )
+                            arrFriendAddToGroup = []
+                        }
+                        else {
+                            $('#errAddFriend').html(`${res[0].msg}`)
+                        }
+                    }
+                })
+            })
+
+            // Đổi tên nhóm chat
+            $('.name-group').dblclick(e => {
+                e.preventDefault()
+                const groupCode = $('#group-code').val()
+                const nameOld = $('.name-group').text()
+
+                $.ajax({
+                    url: '/group/get-owner-group',
+                    type: 'POST',
+                    data: {
+                        groupCode
+                    },
+                    success(res) {
+                        if (res.status) {
+                            $('.name-group').html(`<input type="text" class="form-control" data-nameold="${nameOld}" id="name-group-new">`)
+                        }
+                    }
+                })
+            })
+
+
+            $(document).on('blur', '#name-group-new', e => {
+                e.preventDefault()
+                const nameOld = $(e.target).data('nameold')
+                if ($('#name-group-new').val().trim() == '') {
+                    $('.name-group').html(`${nameOld} <i class="bi bi-person-plus add-friend-to-group" style="font-size:20px"> </i>`)
+                }
+                else {
+                    const groupCode = $('#group-code').val()
+                    const nameNew = $('#name-group-new').val().trim()
+                    $.ajax({
+                        url: '/group/change-group-name',
+                        type: 'POST',
+                        data: {
+                            groupCode,
+                            groupName: nameNew
+                        },
+                        success(res) {
+                            if (res.status) {
+                                $('.name-group').html(`${nameNew} <i class="bi bi-person-plus add-friend-to-group" style="font-size:20px"> </i>`)
+                                Swal.fire({
+                                    text: `${res.msg}`,
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                })
+                                $(`.name-of-group`).html(nameNew)
+                            }
+                            else {
+                                $('.name-group').html(`${nameOld} <i class="bi bi-person-plus add-friend-to-group" style="font-size:20px"> </i>`)
+                                Swal.fire({
+                                    text: `${res.msg}`,
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                })
+                            }
+                        }
+                    })
+                }
+            })
+
+            $('.count-member-of-group').click((e) => {
+                e.preventDefault()
+                const groupCode = $('#group-code').val()
+                $.ajax({
+                    url: '/group/get-member',
+                    type: 'POST',
+                    data: {
+                        groupCode
+                    },
+                    success(res) {
+                        if (res.status) {
+                            const data = res.members
+                            let listMember = ''
+                            data.forEach(item => {
+                                listMember += `
+                                <li class="list-group-item">
+                                    <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
+                                        style="height: 30px; width: 30px;">
+                                    <span style="font-size:14px">${item.name}</span>
+                                </li>
+                                `
+                            })
+                            $('#modal-list-member-of-group #list-member').html(listMember)
+                            $('#modal-list-member-of-group').modal('show')
+                        }
                     }
                 })
             })

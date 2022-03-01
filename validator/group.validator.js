@@ -9,7 +9,14 @@ function creatGroup() {
     ]
 }
 
+function addFriendToGroup() {
+    return [
+        check('listFriend', 'Bạn chưa chọn bạn bè').not().isEmpty(),
+    ]
+}
+
 
 module.exports = {
-    creatGroup
+    creatGroup,
+    addFriendToGroup
 }

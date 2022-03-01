@@ -32,7 +32,6 @@ io.on('connection', (socket) => {
         socket.join(rooms)
     }
 
-
     /**
     * Lấy danh sách người dùng đã connect
     */
@@ -82,17 +81,35 @@ io.on('connection', (socket) => {
         })
     })
 
+    socket.on('add-friend-to-group', data => {
+
+    })
+
+    socket.on('list-user', data => {
+        data.forEach(user => {
+            let arrId = []
+            socket.on('add-friend-to-group', dataAddFriend => {
+                dataAddFriend.forEach(userAdd => {
+                    if (user.email == userAdd) {
+                        arrId.push(user.id)
+                    }
+                })
+                socket.to(arrId).emit('add-friend-to-group', 'ok')
+            })
+        })
+    })
+
     socket.on("disconnect", (reason) => {
         socket.broadcast.emit('user-disconnect', socket.emailUser)
         console.log(`${socket.emailUser} disconnected for ${reason}`);
     });
-
+ 
     /**
      * Thêm bạn bè
      */
-    socket.on('add-friend', data => {
-        console.log(data);
-    })
+    // socket.on('add-friend', data => {
+    //     console.log(data);
+    // })
 })
 
 module.exports = socket;
