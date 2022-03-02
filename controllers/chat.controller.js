@@ -128,6 +128,19 @@ function sendMsgFile(req, res) {
 }
 
 /**
+ * Thu hồi tin nhắn
+ */
+function recallMsg(req, res) {
+    const id = req.body.id
+    chatCPM.recallMsg(id).then(data => {
+        return res.json({
+            status: true,
+            msg: 'Thu hồi tin nhắn thành công'
+        })
+    })
+}
+
+/**
  * Lấy tin nhắn
  */
 function getMsg(data, userEmail) {
@@ -145,9 +158,11 @@ function getMsg(data, userEmail) {
     return arr
 }
 
+
 module.exports = {
     getFriendMessage,
     saveMessage,
     sendMsgImg,
-    sendMsgFile
+    sendMsgFile,
+    recallMsg
 }

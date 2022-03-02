@@ -67,4 +67,18 @@ module.exports = (app) => {
      */
     app.post('/group/get-member', urlencodedParser, groupController.getAllMembersInGroup)
 
+    /**
+     * Xóa thành viên khỏi nhóm chat
+     */
+    app.post('/group/remove-member', urlencodedParser, groupController.removeMemberInGroup)
+
+    /**
+     * Rời khỏi nhóm chat
+     */
+    app.post('/group/leave-group', urlencodedParser, groupController.leaveGroup)
+
+    /**
+     * Thu hồi tin nhắn
+     */
+    app.post('')
 }

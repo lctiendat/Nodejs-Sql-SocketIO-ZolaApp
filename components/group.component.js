@@ -8,7 +8,7 @@ connection.connect();
  */
 function getListGroup(userEmail) {
     return new Promise((res, rej) => {
-        connection.query(`SELECT * FROM groups WHERE code IN  (SELECT group_code as code FROM members_of_group WHERE email = '${userEmail}') AND delete_flag= 0 ORDER BY id DESC `, (err, row) => {
+        connection.query(`SELECT * FROM groups WHERE code IN  (SELECT group_code as code FROM members_of_group WHERE email = '${userEmail}' AND delete_flag = 0) AND delete_flag= 0 ORDER BY id DESC `, (err, row) => {
             if (err) return rej(err)
             res(row)
         })
@@ -28,11 +28,11 @@ function getMsgInGroup(groupCode) {
 }
 
 /**
- * Lấy thônt tin nhóm chat bằng code
+ * Lấy thông tin nhóm chat bằng code
  */
 function getGroupByCode(groupCode) {
     return new Promise((res, rej) => {
-        connection.query(`SELECT group_owner, name, (SELECT COUNT(*) FROM members_of_group WHERE group_code = '${groupCode}' ) as countMemBer FROM groups WHERE code = '${groupCode}' AND delete_flag = 0
+        connection.query(`SELECT group_owner, name, (SELECT COUNT(*) FROM members_of_group WHERE group_code = '${groupCode}' AND delete_flag=0 ) as countMemBer FROM groups WHERE code = '${groupCode}' AND delete_flag = 0
         `, (err, row) => {
             if (err) return rej(err)
             res(row)
@@ -77,7 +77,19 @@ function changeGroupName(groupCode, groupName) {
 function getListMember(groupCode) {
     return new Promise((res, rej) => {
         connection.query(`SELECT email,avatar,name FROM users 
-        WHERE email IN (SELECT email FROM members_of_group WHERE group_code = '${groupCode}' ) ORDER BY id DESC`, (err, row) => {
+        WHERE email IN (SELECT email FROM members_of_group WHERE group_code = '${groupCode}' AND delete_flag = 0 ) ORDER BY id DESC`, (err, row) => {
+            if (err) return rej(err)
+            res(row)
+        })
+    })
+}
+
+/**
+ * Xoá thành viên khỏi nhóm chat
+ */
+function removeMemberInGroup(groupCode, email) {
+    return new Promise((res, rej) => {
+        connection.query(`UPDATE members_of_group SET delete_flag = 1 WHERE group_code = '${groupCode}' AND email = '${email}'`, (err, row) => {
             if (err) return rej(err)
             res(row)
         })
@@ -90,5 +102,6 @@ module.exports = {
     getGroupByCode,
     getListFriendNotInGroup,
     changeGroupName,
-    getListMember
+    getListMember,
+    removeMemberInGroup
 }

@@ -24,8 +24,16 @@ function changeinfor() {
         check('birthday', 'Vui lòng chọn ngày sinh').not().isEmpty(),
     ]
 }
+
+function forget() {
+    return [
+        check('email', 'Email không được để trống').not().isEmpty(),
+        check('email', 'Email không đúng định dạng').isEmail(),
+    ]
+}
 module.exports = {
     signup,
     signin,
-    changeinfor
+    changeinfor,
+    forget
 }

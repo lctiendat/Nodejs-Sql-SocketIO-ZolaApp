@@ -4,6 +4,9 @@ const appCpm = require('../components/app.component');
 const userCpm = require('../components/user.component');
 const md5 = require('md5')
 const serverConfig = require('../config/server.config');
+const nodeMailer = require('nodemailer');
+const mailConfig = require('../config/mail.config');
+const transporter = nodeMailer.createTransport(mailConfig);
 
 /**
  * Đăng ký
@@ -138,10 +141,58 @@ function updateInforUser(req, res) {
     })
 }
 
+/**
+ * Quên mật khẩu
+ */
+function forget(req, res) {
+    const error = validationResult(req);
+    // if (!error.isEmpty()) {
+    //     return res.json(error.array());
+    // }
+    let email = req.body.email;
+    const OTP = serverConfig.createOTP();
+    userCpm.checkEmail(email).then(isExisted => {
+        if (isExisted == false) {
+            return res.json({
+                status: false,
+                msg: 'Email không tồn tại trong hệ thống'
+            });
+        }
+        var mailOptions = {
+            from: 'lctiendat@gmail.com',
+            to: email,
+            subject: 'Yêu cầu lấy lại mật khẩu',
+            html: `Bạn đang có yêu cầu lấy lại mật khẩu <br>
+            Mã OTP của bạn là : <strong>${OTP} </strong> <br>
+            Vui lòng nhập mã OTP để lấy lại mật khẩu. <br>
+            `
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+        return res.json({
+            status: true,
+            msg: 'Gửi email thành công'
+        });
+    }).catch(e => {
+        console.log(e)
+        return res.json({
+            status: false,
+            msg: 'Gửi email thất bại'
+        });
+    });
+}
+
 module.exports = {
     signup,
     signin,
     getInforUser,
     updateInforUser,
-    signout
+    signout,
+    forget
 }

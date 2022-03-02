@@ -159,6 +159,9 @@
     <%- include('../layout/footer'); -%>
 
         <script>
+
+            $('[data-toggle="popover"]').popover();
+
             let socket = io('http://localhost:3000', {
                 'reconnection': true,
                 'reconnectionDelay': 1000,
@@ -330,13 +333,37 @@
                         position: 'top-end'
                     })
                 })
+
+                socket.on('remove-member', data => {
+                    console.log(data);
+                })
+
+                socket.on('leave-group', data => {
+                    if (data.groupCode == $('#group-code').val()) {
+                        $('.total-member').html(parseInt($('.total-member').html()) - 1)
+                        Swal.fire({
+                            text: `${data.email} vừa rời khỏi nhóm chat`,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            position: 'top-end'
+                        })
+                    }
+                })
+
+                socket.on('recall-msg', data => {
+                    $('.content-msg-friend').each((i, item) => {
+                        if ($(item).data('id') == data.id) {
+                            $(item).html('Tin nhắn được thu hồi')
+                        }
+                    })
+                })
             })
 
             // Lấy tin nhắn bạn bè
             $('.user-chat').click((e) => {
                 e.stopPropagation()
                 $('.box-chat-msg').removeClass('d-none').addClass('d-block')
-                $('.wellcome').remove()
+                $('.wellcome').removeClass('d-block').addClass('d-none')
 
                 const email = $(e.target).attr('data-email');
                 $.ajax({
@@ -356,22 +383,25 @@
                                                                 <ul class="nav justify-content-end">
                                                 <li>${(() => {
                                             if (res.data[i].type == 'text') {
-                                                return `<div class="card p-2 content-mess">
-                                                         ${res.data[i].content}
-                                                     <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
-                                                    </div>`
+                                                return `<div class="card p-2 content-mess content-msg-seft">
+                                                         ${res.data[i].content == 'recall' ? 'Tin nhắn được thu hồi' : `${res.data[i].content}  <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
+                                                <i class="bi bi-trash d-flex justify-content-end recall-msg" data-id= "${res.data[i].id}"> </i> `}
+                                                     </div>`
                                             }
                                             else if (res.data[i].type == 'img') {
-                                                return ` <img src="${res.data[i].content}" class="w-100"
+                                                return `<div class="content-msg-seft"> ${res.data[i].content == 'recall' ? '<div class="card p-2 content-mess"> Tin nhắn được thu hồi </div>' : `  <img src="${res.data[i].content}" class="w-100"
                                                             alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">
                                                             <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
+                                                            <i class="bi bi-trash d-flex justify-content-end recall-msg" data-id= "${res.data[i].id}"> </i> `}
+                                                            </div>
                                                             `
                                             }
                                             else {
-                                                return `<div class="card p-2 content-mess">
-                                                             <a href="${res.data[i].content}"
+                                                return `<div class="card p-2 content-mess content-msg-seft">
+                                                    ${res.data[i].content == 'recall' ? 'Tin nhắn được thu hồi' : `  <a href="${res.data[i].content}"
                                                             alt="" download>${(res.data[i].content).replace('/uploads/', '')}</a> <br>
                                                             <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
+                                                            <i class="bi bi-trash d-flex justify-content-end recall-msg" data-id= "${res.data[i].id}"> </i> `}
                                                             </div>`
                                             }
                                         })()}
@@ -391,18 +421,21 @@
                                                 <li>
                                                     ${(() => {
                                             if (res.data[i].type == 'text') {
-                                                return `<div class="card p-2 content-mess">
+                                                return `<div class="card p-2 content-mess content-msg-friend" data-id= "${res.data[i].id}">
                                                          ${res.data[i].content}
                                                      <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
                                                     </div>`
                                             }
                                             else if (res.data[i].type == 'img') {
-                                                return ` <img src="${res.data[i].content}" class="w-100"
+                                                return `
+                                                <div class="content-msg-friend" data-id= "${res.data[i].id}"> 
+                                                <img src="${res.data[i].content}" class="w-100"
                                                             alt="" style="max-width: 500px;max-height:400px;object-fit:cover;line-height: 50px">
-                                                            <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>`
+                                                            <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
+                                                            </div>`
                                             }
                                             else {
-                                                return `<div class="card p-2 content-mess">
+                                                return `<div class="card p-2 content-mess content-msg-friend" data-id= "${res.data[i].id}">
                                                              <a href="${res.data[i].content}"
                                                             alt="" download>${(res.data[i].content).replace('/uploads/', '')}</a> <br>
                                                             <span class=" time-chat">${new Date(res.data[i].created).toISOString().slice(11, 16)}</span>
@@ -645,7 +678,7 @@
                             }
                         })
                         $('.name-group').html(`${res.group[0].name} <i class="bi bi-person-plus add-friend-to-group" style="font-size:20px"> </i>`).attr('data-code', code)
-                        $('.count-member-of-group').html(`<a style="text-decoration:none" class="text-dark" href="#"><i class="bi bi-person"></i>  ${res.group[0].countMemBer} thành viên </a>`)
+                        $('.count-member-of-group').html(`<a style="text-decoration:none" class="text-dark" href="#"><i class="bi bi-person"></i> <span class="total-member">${res.group[0].countMemBer} </span> thành viên </a>`)
                         $('#content-chat').html(listmess).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
                         $('#group-code').attr('value', code)
 
@@ -897,7 +930,11 @@
                                     showConfirmButton: false,
                                     timer: 3000
                                 })
-                                $(`.name-of-group`).html(nameNew)
+                                $(`.name-of-group`).each((i, item) => {
+                                    if ($(item).data('code') == groupCode) {
+                                        $(item).html(nameNew)
+                                    }
+                                })
                             }
                             else {
                                 $('.name-group').html(`${nameOld} <i class="bi bi-person-plus add-friend-to-group" style="font-size:20px"> </i>`)
@@ -912,7 +949,7 @@
                 }
             })
 
-            $('.count-member-of-group').click((e) => {
+            $(document).on('click', '.count-member-of-group', (e) => {
                 e.preventDefault()
                 const groupCode = $('#group-code').val()
                 $.ajax({
@@ -922,6 +959,7 @@
                         groupCode
                     },
                     success(res) {
+                        console.log(res);
                         if (res.status) {
                             const data = res.members
                             let listMember = ''
@@ -931,6 +969,7 @@
                                     <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
                                         style="height: 30px; width: 30px;">
                                     <span style="font-size:14px">${item.name}</span>
+                                    <span class="bi ${item.is_owner == false && item.owner_email == $('#sessionUserEmail').val() ? 'bi-x-circle remove-member' : (item.email == $('#sessionUserEmail').val() ? 'bi-arrow-bar-left leave-group' : '')} float-right" data-email="${item.email}"> </span>
                                 </li>
                                 `
                             })
@@ -941,4 +980,105 @@
                 })
             })
 
+            // Xóa thành viên khỏi nhóm
+            $(document).on('click', '.remove-member', e => {
+                e.preventDefault()
+                const email = $(e.target).data('email')
+                const groupCode = $('#group-code').val()
+                $.ajax({
+                    url: '/group/remove-member',
+                    type: 'POST',
+                    data: {
+                        groupCode,
+                        email
+                    },
+                    success(res) {
+                        if (res.status) {
+                            Swal.fire({
+                                text: `${res.msg}`,
+                                showConfirmButton: false,
+                                timer: 3000
+                            })
+                            $('#modal-list-member-of-group').modal('hide')
+                            $('.total-member').html(parseInt($('.total-member').html()) - 1)
+                            socket.emit('remove-member',
+                                {
+                                    groupCode,
+                                    email
+                                }
+                            )
+                        }
+                    }
+                })
+            })
+
+            // Rời khỏi nhóm
+
+            $(document).on('click', '.leave-group', e => {
+                e.preventDefault()
+                const groupCode = $('#group-code').val()
+                $.ajax({
+                    url: '/group/leave-group',
+                    type: 'POST',
+                    data: {
+                        groupCode
+                    },
+                    success(res) {
+                        if (res.status) {
+                            Swal.fire({
+                                text: `${res.msg}`,
+                                showConfirmButton: false,
+                                timer: 3000
+                            })
+                            $('#modal-list-member-of-group').modal('hide')
+                            socket.emit('leave-group', {
+                                groupCode,
+                                email: $('#sessionUserEmail').val()
+                            })
+                            $('.name-of-group').each((i, item) => {
+                                if ($(item).data('code') == groupCode) {
+                                    $(item).closest('.box-group').remove()
+                                }
+                            })
+                            $('.wellcome').addClass('d-block').removeClass('d-none')
+                            $('.box-chat-msg').addClass('d-none').removeClass('d-block')
+                        }
+                    }
+                })
+            })
+
+            $(document).on('click', '.recall-msg', (e) => {
+                e.preventDefault()
+                const id = $(e.target).data('id')
+
+                Swal.fire({
+                    text: "Bạn có chắc muốn thu hồi tin nhắn không ?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0E6EFD',
+                    cancelButtonColor: 'gray',
+                    confirmButtonText: 'Chắc',
+                    cancelButtonText: 'Thôi'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/chat/recall-msg',
+                            type: 'POST',
+                            data: {
+                                id
+                            },
+                            success(res) {
+                                if (res.status) {
+                                    $(e.target).closest('.content-msg-seft').html('Tin nhắn được thu hồi')
+                                    socket.emit('recall-msg', {
+                                        id,
+                                        sender: $('#sessionUserEmail').val(),
+                                        receiver: $('.name-friend-chat').data('email')
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            })
         </script>

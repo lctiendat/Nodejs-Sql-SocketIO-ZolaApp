@@ -220,13 +220,62 @@ function changeGroupName(req, res) {
 function getAllMembersInGroup(req, res) {
     const group_code = req.body.groupCode
     groupCPN.getListMember(group_code).then(members => {
+        groupCPN.getGroupByCode(group_code).then(group => {
+            array = []
+            members.forEach(member => {
+                if (member.email != group[0].group_owner) {
+                    array.push({
+                        email: member.email,
+                        name: member.name,
+                        avatar: member.avatar,
+                        is_owner: false,
+                        owner_email: group[0].group_owner
+                    })
+                }
+                else {
+                    array.push({
+                        email: member.email,
+                        name: member.name,
+                        avatar: member.avatar,
+                        is_owner: true,
+                        owner_email: group[0].group_owner
+                    })
+                }
+            })
+            return res.json({
+                status: true,
+                members: array
+            })
+        })
+
+    })
+}
+/**
+ * Xóa thành viên khỏi nhóm chat
+ */
+function removeMemberInGroup(req, res) {
+    const group_code = req.body.groupCode
+    const email = req.body.email
+    groupCPN.removeMemberInGroup(group_code, email).then(result => {
         return res.json({
             status: true,
-            members
+            msg: 'Xóa thành viên khỏi nhóm thành công'
         })
     })
 }
-
+/**
+ * Rời khỏi nhóm chat
+ */
+function leaveGroup(req, res) {
+    const email = req.session.User.email
+    const group_code = req.body.groupCode
+    groupCPN.removeMemberInGroup(group_code, email).then(result => {
+        return res.json({
+            status: true,
+            msg: 'Rời khỏi nhóm chat thành công'
+        })
+    })
+}
 module.exports = {
     createGroup,
     getMsgInGroup,
@@ -237,5 +286,7 @@ module.exports = {
     addFriendToGroup,
     getGroupOwner,
     changeGroupName,
-    getAllMembersInGroup
+    getAllMembersInGroup,
+    removeMemberInGroup,
+    leaveGroup
 }

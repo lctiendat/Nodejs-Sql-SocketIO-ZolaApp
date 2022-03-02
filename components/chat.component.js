@@ -56,9 +56,21 @@ function getAllRoomOfUser(userEmail) {
     })
 }
 
+/**
+ * Thu hồi tin nhắn
+ */
+function recallMsg(id) {
+    return new Promise((res, rej) => {
+        connection.query(`UPDATE messages SET content = 'recall' WHERE id = '${id}'`, (err, rows) => {
+            if (err) return rej(err)
+            res(rows)
+        })
+    })
+}
 module.exports = {
     getFriendMessage,
     getFriendHaveMessage,
     getRoom,
-    getAllRoomOfUser
+    getAllRoomOfUser,
+    recallMsg
 }

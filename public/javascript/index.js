@@ -76,7 +76,7 @@ $(document).ready(() => {
         e.preventDefault()
         $('#emailFriend').show()
         $('.btn-search-friend').show()
-        $('input').val('')
+        $('input').not('#group-code').val('')
         $('#result').html('')
     })
 

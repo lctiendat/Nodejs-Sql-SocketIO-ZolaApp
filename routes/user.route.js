@@ -38,4 +38,12 @@ module.exports = (app) => {
      */
     app.post('/user/changeinfor', urlencodedParser, userValidator.changeinfor(), userController.updateInforUser)
 
+    /**
+     * Quên mật khẩu
+     */
+    app.get('/forget', (req, res) => {
+        res.render('user/forget');
+    })
+
+    app.post('/forget', urlencodedParser, userValidator.forget(), userController.forget)
 }

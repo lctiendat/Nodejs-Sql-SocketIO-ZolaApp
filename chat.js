@@ -92,10 +92,36 @@ io.on('connection', (socket) => {
                 dataAddFriend.forEach(userAdd => {
                     if (user.email == userAdd) {
                         arrId.push(user.id)
+                        socket.to(arrId).emit('add-friend-to-group', 'ok')
                     }
                 })
-                socket.to(arrId).emit('add-friend-to-group', 'ok')
             })
+
+            socket.on('remove-member', data => {
+                //  if (data.email == user.email) {
+                // socket.leave(data.room)
+                socket.emit('remove-member', data.groupCode)
+                //  }
+            })
+
+        })
+    })
+
+    /**
+     * Rời nhóm chat
+     */
+    socket.on('leave-group', data => {
+        socket.to((data.groupCode).toString()).emit('leave-group', data)
+        socket.leave((data.groupCode).toString())
+    })
+
+    /**
+     * Thu hồi tin nhắn bạn bè
+     */
+    socket.on('recall-msg', data => {
+        chatCPM.getRoom(data.receiver, data.sender).then((result) => {
+            socket.to(JSON.parse(JSON.stringify(result))[0].room).emit('recall-msg', data)
+            console.log(result);
         })
     })
 
@@ -103,7 +129,7 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('user-disconnect', socket.emailUser)
         console.log(`${socket.emailUser} disconnected for ${reason}`);
     });
- 
+
     /**
      * Thêm bạn bè
      */

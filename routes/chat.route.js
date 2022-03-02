@@ -33,4 +33,9 @@ module.exports = (app) => {
      * Gửi tin nhắn kèm file
      */
     app.post('/chat/file', upload.single('file'), urlencodedParser, chatController.sendMsgFile)
+
+    /**
+     * Thu hồi tin nhắn
+     */
+    app.post('/chat/recall-msg',urlencodedParser, chatController.recallMsg)
 }
