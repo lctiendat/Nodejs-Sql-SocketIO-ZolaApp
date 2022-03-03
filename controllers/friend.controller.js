@@ -165,18 +165,18 @@ function acceptFriendRequest(req, res) {
 function cancelFriendRequest(req, res) {
     const userEmail = req.session.User.email
     const friendEmail = req.body.email
-    friendCPM.cancelFriendRequest(userEmail, friendEmail).then(result => {
-        return res.json({
-            status: true,
-            msg: 'Xoá yêu cầu kết bạn thành công'
-        })
-    }).catch(err => {
-        console.log(err)
-        return res.json({
-            status: false,
-            msg: 'Có lỗi xảy ra'
-        })
+    //  friendCPM.cancelFriendRequest(userEmail, friendEmail).then(result => {
+    return res.json({
+        status: true,
+        msg: 'Xoá yêu cầu kết bạn thành công'
     })
+    // }).catch(err => {
+    //     console.log(err)
+    //     return res.json({
+    //         status: false,
+    //         msg: 'Có lỗi xảy ra'
+    //     })
+    // })
 }
 
 module.exports = {

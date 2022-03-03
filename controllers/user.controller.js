@@ -72,7 +72,6 @@ function signin(req, res) {
         req.session.User = {
             email
         }
-        console.log(req.session.User.email)
         return res.json({
             status: true,
             msg: 'Đăng nhập thành công'
@@ -145,47 +144,70 @@ function updateInforUser(req, res) {
  * Quên mật khẩu
  */
 function forget(req, res) {
-    const error = validationResult(req);
-    // if (!error.isEmpty()) {
-    //     return res.json(error.array());
-    // }
-    let email = req.body.email;
     const OTP = serverConfig.createOTP();
-    userCpm.checkEmail(email).then(isExisted => {
-        if (isExisted == false) {
-            return res.json({
-                status: false,
-                msg: 'Email không tồn tại trong hệ thống'
-            });
-        }
-        var mailOptions = {
-            from: 'lctiendat@gmail.com',
-            to: email,
-            subject: 'Yêu cầu lấy lại mật khẩu',
-            html: `Bạn đang có yêu cầu lấy lại mật khẩu <br>
+    if (req.body.hasOwnProperty('email')) {
+        const email = req.body.email;
+        userCpm.checkEmail(email).then(isExisted => {
+            if (isExisted == false) {
+                return res.json({
+                    status: false,
+                    msg: 'Email không tồn tại trong hệ thống'
+                });
+            }
+
+            const data = [{
+                token: OTP
+            }]
+            userCpm.updateUser(email, data).then(data => { })
+            var mailOptions = {
+                from: 'lctiendat@gmail.com',
+                to: email,
+                subject: 'Yêu cầu lấy lại mật khẩu',
+                html: `Bạn đang có yêu cầu lấy lại mật khẩu <br>
             Mã OTP của bạn là : <strong>${OTP} </strong> <br>
             Vui lòng nhập mã OTP để lấy lại mật khẩu. <br>
             `
-        };
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Email sent: ' + info.response);
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+            });
+            return res.json({
+                status: true,
+                msg: 'Gửi email thành công'
+            });
+        })
+    }
+    else if (req.body.hasOwnProperty('otp')) {
+        const otp = req.body.otp;
+        const email = req.body.email_step2
+        userCpm.checkOTP(email, otp).then(isExisted => {
+            if (isExisted == false) {
+                return res.json({
+                    status: false,
+                    msg: 'Mã OTP không chính xác'
+                });
             }
-        });
+            return res.json({
+                status: true,
+                msg: 'Mã OTP chính xác'
+            });
+        })
+    }
+    else if (req.body.hasOwnProperty('password')) {
+        const password = req.body.password;
+        const email = req.body.email_step3
 
-        return res.json({
-            status: true,
-            msg: 'Gửi email thành công'
-        });
-    }).catch(e => {
-        console.log(e)
-        return res.json({
-            status: false,
-            msg: 'Gửi email thất bại'
-        });
-    });
+        const data = [
+            {
+                password: md5(password)
+            }
+        ]
+        userCpm.updateUser(email, data).then(data => {
+            return res.json({
+                status: true,
+                msg: 'Thay đổi mật khẩu thành công. Đang chuyển hướng'
+            })
+        })
+    }
 }
 
 module.exports = {

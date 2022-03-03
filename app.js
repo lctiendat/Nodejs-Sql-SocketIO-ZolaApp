@@ -11,7 +11,7 @@ const friendRouter = require('./routes/friend.route');
 const homeRouter = require('./routes/home.route');
 const chatRouter = require('./routes/chat.route');
 const groupRouter = require('./routes/group.route');
-
+const passport = require('passport');
 process.env.TZ = "Asia/Ho_Chi_Minh";
 
 console.log(Date(Date.now()));
@@ -44,6 +44,8 @@ homeRouter(app)
 chatRouter(app)
 groupRouter(app)
 
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(function (req, res, next) {
   next(createError(404));
 });

@@ -11,7 +11,7 @@
                         alt="" style="max-width: 60px;line-height: 70px">
                 </div>
                 <div class="col-md-7 pl-0">
-                    <p style="line-height: 70px;" class="name-friend">
+                    <p style="line-height: 70px;" class="name-friend" data-email="<%= element.email %>">
                         <%= element.name %>
                     </p>
                 </div>
@@ -448,7 +448,7 @@
                                 }
                             }
                             $('#content-chat').html(data).animate({ scrollTop: $('#content-chat').prop("scrollHeight") }, 1000)
-                            $('.name-friend-chat').html(res.user[0].name).attr('data-email', email)
+                            $('.name-friend-chat').html(`${res.user[0].name} <i class="bi bi-person-x unfriend" data-email = "${res.user[0].email}"> </i>`).attr('data-email', email)
                             dataUser.then(users => {
                                 users.every(user => {
                                     if (user.email == email) {
@@ -1074,6 +1074,50 @@
                                         id,
                                         sender: $('#sessionUserEmail').val(),
                                         receiver: $('.name-friend-chat').data('email')
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+
+            // Huỷ kết bạn
+            $(document).on('click', '.unfriend', e => {
+                e.preventDefault()
+                const email = $(e.target).data('email')
+
+                Swal.fire({
+                    text: "Bạn có chắc muốn hủy kết bạn không ?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0E6EFD',
+                    cancelButtonColor: 'gray',
+                    confirmButtonText: 'Chắc',
+                    cancelButtonText: 'Thôi'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/friend/cancel',
+                            type: 'POST',
+                            data: {
+                                email
+                            },
+                            success(res) {
+                                if (res.status) {
+                                    Swal.fire({
+                                        text: `Xoá kết bạn thành công`,
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    })
+                                    $('.name-friend').each((i, item) => {
+                                        if ($(item).data('email') == email) {
+                                            $(item).closest('.box-user').remove()
+                                        }
+                                    })
+                                    socket.emit('unfriend', {
+                                        email,
+                                        sender: $('#sessionUserEmail').val()
                                     })
                                 }
                             }

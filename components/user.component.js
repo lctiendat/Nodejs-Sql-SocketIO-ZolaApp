@@ -63,7 +63,18 @@ function updateUser(email, data) {
     })
 }
 
+/**
+ * Kiểm tra email và OTP
+ */
+function checkOTP(email, otp) {
+    return new Promise((res, rej) => {
+        connection.query(`SELECT * FROM users WHERE email = '${email}' AND token = "${otp}" AND delete_flag = 0`, (err, row) => {
+            if (err) return rej(err)
+            res(row.length > 0 ? true : false)
 
+        })
+    })
+}
 
 module.exports = {
     checkEmail,
@@ -71,4 +82,5 @@ module.exports = {
     getUser,
     getUserByEmail,
     updateUser,
+    checkOTP
 };
