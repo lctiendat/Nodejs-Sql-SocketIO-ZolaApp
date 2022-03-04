@@ -115,4 +115,12 @@
 <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"
     integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H"
     crossorigin="anonymous"></script>
+<script>
+    let socket = io('http://localhost:3000', {
+        'reconnection': true,
+        'reconnectionDelay': 1000,
+        'reconnectionDelayMax': 5000,
+        'reconnectionAttempts': 5
+    });
+</script>
 <script src="/assets/javascript/index.js"></script>

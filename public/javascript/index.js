@@ -1,4 +1,41 @@
+let dataUser2 = new Promise((res, rej) => {
+    socket.on('list-user', data => {
+        console.log(data);
+        res(data)
+    })
+})
 $(document).ready(() => {
+    socket.on('connect', () => {
+        let dataUser = new Promise((res, rej) => {
+            socket.on('list-user', data => {
+                console.log(data);
+                res(data)
+            })
+        })
+
+        socket.on('add-friend', data => {
+            if (window.location.pathname.includes('/')) {
+                Swal.fire({
+                    text: `${data[0].name} đã gửi lời mời kết bạn`,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    position: 'top-end'
+                })
+            }
+        })
+
+        socket.on('accept-friend', data => {
+            if (window.location.pathname.includes('/')) {
+                Swal.fire({
+                    text: `${data[0].name} đã đồng ý kết bạn`,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    position: 'top-end'
+                })
+            }
+        })
+
+    })
 
     $('.btn-search-friend').click((e) => {
         e.preventDefault()
@@ -17,7 +54,7 @@ $(document).ready(() => {
             <center> <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt=""
                     style="height: 150px; width: 150px;"><br>
                 <span class="mt-2">${res.data[0].name == null ? 'Chưa cập nhật' : res.data[0].name}</span> <br>
-                <span id="signature">${res.data[0].email}</span> <br>
+                <span id="signature">${res.data[0].signature == null ? 'Chưa cập nhật' : res.data[0].signature}</span> <br>
                 ${(() => {
                             if (typeof res.data[0].status !== 'undefined') {
                                 if (res.data[0].status == 'pending') {
@@ -40,7 +77,7 @@ $(document).ready(() => {
                     </tr>
                     <tr>
                         <td>Ngày sinh :</td>
-                        <td class="text-dark">${res.data[0].birthday == null ? 'Chưa cập nhật' : new Date(res.data[0].birthday).toISOString().slice(0, 10)}</td>
+                        <td class="text-dark">${res.data[0].birthday == null ? 'Chưa cập nhật' : new Date(res.data[0].birthday).toLocaleString("en-GB").slice(0, 10)}</td>
                     </tr>
                 </tbody>
             </table>` )
@@ -83,6 +120,7 @@ $(document).ready(() => {
     $(document).on('click', '.btn-add-friend', (e) => {
         e.preventDefault()
         const email = $(e.target).attr('data-email')
+        const sender = $('#sessionUserEmail').val()
         $.ajax({
             url: '/friend/add',
             type: 'POST',
@@ -97,6 +135,15 @@ $(document).ready(() => {
                         text: `${res.msg}`,
                         showConfirmButton: false,
                         timer: 3000
+                    })
+
+                    dataUser.then(data => {
+                        data.forEach(user => {
+                            if (user.email == email) {
+                                user.sender = sender
+                                socket.emit('add-friend', user)
+                            }
+                        })
                     })
 
                     $('button[data-dismiss="modal"]').click()
@@ -188,6 +235,7 @@ $(document).ready(() => {
 
     $(document).on('click', '.btn-accept-friend', (e) => {
         e.preventDefault()
+        const sender = $('#sessionUserEmail').val()
         const email = $(e.target).data('email')
         const name = $(e.target).data('name')
         const countFriend = parseInt($('#count-friend').text().trim())
@@ -204,6 +252,17 @@ $(document).ready(() => {
                         showConfirmButton: false,
                         timer: 3000
                     })
+                      socket.emit('accept-friend', 1)
+
+                    dataUser2.then(data => {
+                        data.forEach(user => {
+                            if (user.email == email) {
+                                user.sender = sender
+                                socket.emit('accept-friend', user)
+                            }
+                        })
+                    })
+
                     $(e.target).closest('.card').remove()
                     $('#count-friend-request').html(countFriendRequest - 1)
                     $('#count-friend').html(countFriend + 1)

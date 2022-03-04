@@ -2,7 +2,6 @@ var { check, validationResult } = require('express-validator')
 
 function signup() {
     return [
-        check('email', 'Email không được để trống').not().isEmpty(),
         check('email', 'Email không đúng định dạng').isEmail(),
         check('password', 'Mật khẩu không được để trống').not().isEmpty(),
         check('name', 'Tên không được để trống').not().isEmpty(),
@@ -11,7 +10,6 @@ function signup() {
 
 function signin() {
     return [
-        check('email', 'Email không được để trống').not().isEmpty(),
         check('email', 'Email không đúng định dạng').isEmail(),
         check('password', 'Mật khẩu không được để trống').not().isEmpty(),
     ]
@@ -27,7 +25,6 @@ function changeinfor() {
 
 function forget() {
     return [
-        check('email', 'Email không được để trống').not().isEmpty(),
         check('email', 'Email không đúng định dạng').isEmail(),
     ]
 }

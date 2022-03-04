@@ -4,42 +4,49 @@
         <li style="font-size: 13px;" class="ml-3"><a id="msg-group" class="text-dark" href="#">Tin nhắn nhóm </a></li>
     </ul>
     <div id="list-msg-friend">
-        <% listMsgFriend.forEach(element=> { %>
-            <div class=" row mt-2 box-user" style="height: 70px;background: #E5EFFF;">
-                <div class="col-md-3 pr-0">
-                    <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100 mt-1"
-                        alt="" style="max-width: 60px;line-height: 70px">
-                </div>
-                <div class="col-md-7 pl-0">
-                    <p style="line-height: 70px;" class="name-friend" data-email="<%= element.email %>">
-                        <%= element.name %>
-                    </p>
-                </div>
-                <div class="col-md-2">
-                    <i class="bi bi-chat user-chat" style="font-size: 30px;line-height: 70px;"
-                        data-email="<%= element.email %>"></i>
-                </div>
-            </div>
-            <% }); %>
+
+        <% if (listMsgFriend.length==0) { %>
+            <center><span style="font-size: 14px; color: gray;"> Bạn chưa có tin nhắn nào</span></center>
+            <% } else { %>
+                <% listMsgFriend.forEach(element=> { %>
+                    <div class=" row mt-2 box-user" style="height: 70px;background: #E5EFFF;">
+                        <div class="col-md-3 pr-0">
+                            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"
+                                class="w-100 mt-1" alt="" style="max-width: 60px;line-height: 70px">
+                        </div>
+                        <div class="col-md-7 pl-0">
+                            <p style="line-height: 70px;" class="name-friend" data-email="<%= element.email %>">
+                                <%= element.name %>
+                            </p>
+                        </div>
+                        <div class="col-md-2">
+                            <i class="bi bi-chat user-chat" style="font-size: 30px;line-height: 70px;"
+                                data-email="<%= element.email %>"></i>
+                        </div>
+                    </div>
+                    <% }); } %>
     </div>
     <div id="list-msg-group" class="d-none">
-        <% listGroup.forEach(element=> { %>
-            <div class=" row mt-2 box-group" style="height: 70px;background: #E5EFFF;">
-                <div class="col-md-3 pr-0">
-                    <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" class="w-100 mt-1"
-                        alt="" style="max-width: 60px;line-height: 70px">
+        <% if (listGroup.length==0) { %>
+        <center><span style="font-size: 14px; color: gray;"> Bạn chưa có tin nhắn nào</span></center>
+        <% } else { %>
+            <% listGroup.forEach(element=> { %>
+                <div class=" row mt-2 box-group" style="height: 70px;background: #E5EFFF;">
+                    <div class="col-md-3 pr-0">
+                        <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"
+                            class="w-100 mt-1" alt="" style="max-width: 60px;line-height: 70px">
+                    </div>
+                    <div class="col-md-7 pl-0">
+                        <p style="line-height: 70px;" class="name-of-group" data-code="<%= element.code %>">
+                            <%= element.name %>
+                        </p>
+                    </div>
+                    <div class="col-md-2">
+                        <i class="bi bi-chat group-chat" style="font-size: 30px;line-height: 70px;"
+                            data-code="<%= element.code %>"></i>
+                    </div>
                 </div>
-                <div class="col-md-7 pl-0">
-                    <p style="line-height: 70px;" class="name-of-group" data-code="<%= element.code %>">
-                        <%= element.name %>
-                    </p>
-                </div>
-                <div class="col-md-2">
-                    <i class="bi bi-chat group-chat" style="font-size: 30px;line-height: 70px;"
-                        data-code="<%= element.code %>"></i>
-                </div>
-            </div>
-            <% }); %>
+                <% }); } %>
     </div>
     </div>
     <input type="hidden" id="sessionUserEmail" name="" value="<%= userEmail %>">
@@ -72,7 +79,6 @@
                     </li>
                 </ul>
             </div>
-
             <div id="content-chat" class="w-100 pb-2" style="max-height:70vh;overflow-y: scroll;">
             </div>
             <div class="card w-100 position-absolute position-relative" style="bottom: 0;">
@@ -162,12 +168,6 @@
 
             $('[data-toggle="popover"]').popover();
 
-            let socket = io('http://localhost:3000', {
-                'reconnection': true,
-                'reconnectionDelay': 1000,
-                'reconnectionDelayMax': 5000,
-                'reconnectionAttempts': 5
-            });
 
             var dataUser = new Promise((res, rej) => {
                 socket.on('connect', () => {

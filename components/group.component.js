@@ -51,7 +51,7 @@ function getListFriendNotInGroup(groupCode, userEmail) {
         AND status = 'accept' AND delete_flag = 0 union 
         SELECT userEmail as email FROM friends WHERE friendEmail = '${userEmail}' 
         AND status = 'accept' AND delete_flag = 0 ) AND email NOT IN 
-        (SELECT email FROM members_of_group WHERE group_code= '${groupCode}' ) ORDER BY id DESC
+        (SELECT email FROM members_of_group WHERE group_code= '${groupCode}' AND delete_flag = 0) ORDER BY id DESC
 `, (err, row) => {
             if (err) return rej(err)
             res(row)

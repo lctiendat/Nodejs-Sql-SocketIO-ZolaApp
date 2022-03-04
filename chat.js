@@ -98,12 +98,8 @@ io.on('connection', (socket) => {
             })
 
             socket.on('remove-member', data => {
-                //  if (data.email == user.email) {
-                // socket.leave(data.room)
                 socket.emit('remove-member', data.groupCode)
-                //  }
             })
-
         })
     })
 
@@ -125,17 +121,36 @@ io.on('connection', (socket) => {
         })
     })
 
+    /**
+    * Thêm bạn bè
+    */
+    socket.on('add-friend', data => {
+        console.log(data)
+        userCPN.getUserByEmail(data.sender).then(user => {
+            socket.to((data.id).toString()).emit('add-friend', [{
+                name: user[0].name,
+                email: data.sender,
+            }])
+        })
+    })
+
+    /**
+   * Đồng ý kết bạn
+   */
+    socket.on('accept-friend', data => {
+        console.log(data)
+        // userCPN.getUserByEmail(data.sender).then(user => {
+        //     socket.to((data.id).toString()).emit('accept-friend', [{
+        //         name: user[0].name,
+        //         email: data.sender,
+        //     }])
+        // })
+    })
+
     socket.on("disconnect", (reason) => {
         socket.broadcast.emit('user-disconnect', socket.emailUser)
         console.log(`${socket.emailUser} disconnected for ${reason}`);
     });
-
-    /**
-     * Thêm bạn bè
-     */
-    // socket.on('add-friend', data => {
-    //     console.log(data);
-    // })
 })
 
 module.exports = socket;
