@@ -68,12 +68,14 @@ function getMsgInGroup(req, res) {
  * Gửi tin nhắn dạng text
  */
 function saveMsgText(req, res) {
-    const group_code = req.body.code
+    const group_code = req.body.groupCode
+    const code = req.body.code
     const email = req.session.User.email
     const content = req.body.content
     const type = 'text'
     const data = [{
         group_code,
+        code,
         email,
         content,
         type,
@@ -96,10 +98,12 @@ function saveMsgImage(req, res) {
     const email = req.session.User.email
     const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
     const group_code = req.body.groupCode
+    const code = req.body.code
     const content = newPath
     const type = 'img'
     const data = [{
         group_code,
+        code,
         email,
         content,
         type,
@@ -122,10 +126,12 @@ function saveMsgFile(req, res) {
     const email = req.session.User.email
     const newPath = (req.file.path).replace('/Users/lctiendat/Documents/ZolaApp', '')
     const group_code = req.body.groupCode
+    const code = req.body.code
     const content = newPath
     const type = 'file'
     const data = [{
         group_code,
+        code,
         email,
         content,
         type,
@@ -276,6 +282,19 @@ function leaveGroup(req, res) {
         })
     })
 }
+
+/**
+ * Thu hồi tin nhắn
+ */
+function recallMsg(req, res) {
+    const id = req.body.id
+    groupCPN.recallMsg(id).then(data => {
+        return res.json({
+            status: true,
+            msg: 'Thu hồi tin nhắn thành công'
+        })
+    })
+}
 module.exports = {
     createGroup,
     getMsgInGroup,
@@ -288,5 +307,6 @@ module.exports = {
     changeGroupName,
     getAllMembersInGroup,
     removeMemberInGroup,
-    leaveGroup
+    leaveGroup,
+    recallMsg
 }

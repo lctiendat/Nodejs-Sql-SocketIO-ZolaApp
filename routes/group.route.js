@@ -80,5 +80,5 @@ module.exports = (app) => {
     /**
      * Thu hồi tin nhắn
      */
-    app.post('')
+    app.post('/group/recall-msg', urlencodedParser, groupController.recallMsg)
 }

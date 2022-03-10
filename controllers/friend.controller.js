@@ -68,18 +68,18 @@ function addFriend(req, res) {
         created: serverConfig.getCurrenTime(),
         modified: serverConfig.getCurrenTime()
     }]
-    appCpm.save('friends', data).then(result => {
-        return res.json({
-            status: true,
-            msg: 'Đã gửi lời mời kết bạn'
-        })
-    }).catch(err => {
-        console.log(err)
-        return res.json({
-            status: false,
-            msg: 'Có lỗi xảy ra'
-        })
+    //  appCpm.save('friends', data).then(result => {
+    return res.json({
+        status: true,
+        msg: 'Đã gửi lời mời kết bạn'
     })
+    // }).catch(err => {
+    //     console.log(err)
+    //     return res.json({
+    //         status: false,
+    //         msg: 'Có lỗi xảy ra'
+    //     })
+    // })
 }
 
 /**
@@ -143,20 +143,20 @@ function acceptFriendRequest(req, res) {
         created: serverConfig.getCurrenTime()
     }]
 
-    // friendCPM.acceptFriend(userEmail, friendEmail).then(result => {
-    //     appCpm.save('messages', dataMsg).then(result => {
-    return res.json({
-        status: true,
-        msg: 'Đã chấp nhận lời mời kết bạn'
+    friendCPM.acceptFriend(userEmail, friendEmail).then(result => {
+        appCpm.save('messages', dataMsg).then(result => {
+            return res.json({
+                status: true,
+                msg: 'Đã chấp nhận lời mời kết bạn'
+            })
+        })
+    }).catch(err => {
+        console.log(err)
+        return res.json({
+            status: false,
+            msg: 'Có lỗi xảy ra'
+        })
     })
-    //     })
-    // }).catch(err => {
-    //     console.log(err)
-    //     return res.json({
-    //         status: false,
-    //         msg: 'Có lỗi xảy ra'
-    //     })
-    // })
 }
 
 /**

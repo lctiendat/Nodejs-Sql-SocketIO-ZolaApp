@@ -20,7 +20,7 @@ function getListGroup(userEmail) {
  */
 function getMsgInGroup(groupCode) {
     return new Promise((res, rej) => {
-        connection.query(`SELECT messages_of_group.email as email,users.name as nameUser ,users.avatar , messages_of_group.content , messages_of_group.type ,messages_of_group.created as time  FROM messages_of_group LEFT JOIN users ON users.email = messages_of_group.email WHERE messages_of_group.group_code = '${groupCode}' AND messages_of_group.delete_flag = 0 ORDER BY messages_of_group.id`, (err, row) => {
+        connection.query(`SELECT messages_of_group.code as code , messages_of_group.id as id, messages_of_group.email as email,users.name as nameUser ,users.avatar , messages_of_group.content , messages_of_group.type ,messages_of_group.created as time  FROM messages_of_group LEFT JOIN users ON users.email = messages_of_group.email WHERE messages_of_group.group_code = '${groupCode}' AND messages_of_group.delete_flag = 0 ORDER BY messages_of_group.id`, (err, row) => {
             if (err) return rej(err)
             res(row)
         })
@@ -96,6 +96,18 @@ function removeMemberInGroup(groupCode, email) {
     })
 }
 
+/**
+ * Thu hồi tin nhắn
+ */
+function recallMsg(id) {
+    return new Promise((res, rej) => {
+        connection.query(`UPDATE messages_of_group SET content = 'recall' WHERE code = '${id}'`, (err, rows) => {
+            if (err) return rej(err)
+            res(rows)
+        })
+    })
+}
+
 module.exports = {
     getListGroup,
     getMsgInGroup,
@@ -103,5 +115,6 @@ module.exports = {
     getListFriendNotInGroup,
     changeGroupName,
     getListMember,
-    removeMemberInGroup
+    removeMemberInGroup,
+    recallMsg
 }

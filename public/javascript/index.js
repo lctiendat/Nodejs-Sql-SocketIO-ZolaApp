@@ -137,14 +137,14 @@ $(document).ready(() => {
                         timer: 3000
                     })
 
-                    dataUser.then(data => {
-                        data.forEach(user => {
-                            if (user.email == email) {
-                                user.sender = sender
-                                socket.emit('add-friend', user)
-                            }
-                        })
-                    })
+                    // dataUser.then(data => {
+                    //     data.forEach(user => {
+                    //         if (user.email == email) {
+                    //             user.sender = sender
+                    socket.emit('add-friend', email)
+                    //     }
+                    // })
+                    // })
 
                     $('button[data-dismiss="modal"]').click()
                 }
@@ -252,7 +252,7 @@ $(document).ready(() => {
                         showConfirmButton: false,
                         timer: 3000
                     })
-                      socket.emit('accept-friend', 1)
+                    socket.emit('accept-friend', 1)
 
                     dataUser2.then(data => {
                         data.forEach(user => {

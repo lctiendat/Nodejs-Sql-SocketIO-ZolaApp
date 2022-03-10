@@ -4,7 +4,7 @@ const socket = {
 }
 const chatCPM = require('./components/chat.component');
 const userCPN = require('./components/user.component');
-
+const groupCPN = require('./components/group.component');
 
 //getRoomUser()
 let daLoginNamespace = io.of('dalogin');
@@ -72,35 +72,42 @@ io.on('connection', (socket) => {
     socket.on('send-message-group', data => {
         userCPN.getUserByEmail(data.sender).then(user => {
             //   console.log(user);
-            socket.to((data.code).toString()).emit('receive-message-group', [{
+            socket.to((data.groupCode).toString()).emit('receive-message-group', [{
                 sender: user[0].name,
                 message: data.content,
                 code: data.code,
+                groupCode: data.groupCode,
                 type: data.type
             }])
         })
     })
 
-    socket.on('add-friend-to-group', data => {
-
-    })
 
     socket.on('list-user', data => {
         data.forEach(user => {
             let arrId = []
             socket.on('add-friend-to-group', dataAddFriend => {
-                dataAddFriend.forEach(userAdd => {
-                    if (user.email == userAdd) {
-                        arrId.push(user.id)
-                        socket.to(arrId).emit('add-friend-to-group', 'ok')
-                    }
+                (dataAddFriend.listFriend).forEach(userAdd => {
+                    groupCPN.getGroupByCode(dataAddFriend.groupCode).then(group => {
+                        if (user.email == userAdd) {
+                            arrId.push(user.id)
+                            socket.to(arrId).emit('add-friend-to-group', {
+                                groupCode: dataAddFriend.groupCode,
+                                groupName: group[0].name,
+                            })
+                        }
+                    })
                 })
             })
-
-            socket.on('remove-member', data => {
-                socket.emit('remove-member', data.groupCode)
-            })
         })
+    })
+
+    /**
+     * Xoá thành viên khỏi nhóm chat
+     */
+    socket.on('remove-member', data => {
+        console.log('remove member', data);
+        socket.to((data.groupCode).toString()).emit('remove-member', data)
     })
 
     /**
@@ -110,10 +117,9 @@ io.on('connection', (socket) => {
         socket.to((data.groupCode).toString()).emit('leave-group', data)
         socket.leave((data.groupCode).toString())
     })
-
     /**
-     * Thu hồi tin nhắn bạn bè
-     */
+    * Thu hồi tin nhắn bạn bè
+    */
     socket.on('recall-msg', data => {
         chatCPM.getRoom(data.receiver, data.sender).then((result) => {
             socket.to(JSON.parse(JSON.stringify(result))[0].room).emit('recall-msg', data)
@@ -122,16 +128,28 @@ io.on('connection', (socket) => {
     })
 
     /**
+     * Thu hồi tin nhắn nhóm
+     */
+    socket.on('recall-msg-group', data => {
+        userCPN.getUserByEmail(data.sender).then(user => {
+            data['sender'] = user[0].name
+            socket.broadcast.emit('recall-msg-group', data)
+        })
+    })
+
+    /**
     * Thêm bạn bè
     */
     socket.on('add-friend', data => {
-        console.log(data)
-        userCPN.getUserByEmail(data.sender).then(user => {
-            socket.to((data.id).toString()).emit('add-friend', [{
-                name: user[0].name,
-                email: data.sender,
-            }])
-        })
+
+
+
+        // userCPN.getUserByEmail(data.sender).then(user => {
+        //     socket.to((data.id).toString()).emit('add-friend', [{
+        //         name: user[0].name,
+        //         email: data.sender,
+        //     }])
+        // })
     })
 
     /**
@@ -145,6 +163,13 @@ io.on('connection', (socket) => {
         //         email: data.sender,
         //     }])
         // })
+    })
+
+    /**
+     * Đổi tên nhóm chat
+     */
+    socket.on('rename-group', data => {
+        socket.to((data.groupCode).toString()).emit('rename-group', data)
     })
 
     socket.on("disconnect", (reason) => {
